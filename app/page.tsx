@@ -9,13 +9,6 @@ import "swiper/css/pagination";
 
 const HomePage: React.FC = () => {
   useEffect(() => {
- const marqueeElements = document.querySelectorAll('.vlt-content-marquee, .vlt-content-marquee-reverse');
-    marqueeElements.forEach(el => {
-      const element = el as HTMLElement;
-      element.style.animation = 'none';
-      element.offsetHeight; // Trigger reflow
-      element.style.animation = '';
-    });
     const initSwipers = async () => {
       // Import Swiper modules
       const Swiper = (await import("swiper")).default;
