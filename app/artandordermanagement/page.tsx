@@ -135,10 +135,9 @@ export default function ArtOrderManagement() {
         : '0px',
   }}
 >
-  {item.content}
+  <div className="panel-content">{item.content}</div>
 </div>
-                    <div className="panel-content">{item.content}</div>
-                  </div>
+
                 </div>
               ))}
             </div>
