@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
 import { IoCheckmarkCircle } from "react-icons/io5";
-import { motion, useInView, useAnimation } from "framer-motion";
+import { motion, useInView, useAnimation, easeOut } from "framer-motion";
 
 export default function AboutPage() {
   const [sliderPos, setSliderPos] = useState(50);
@@ -239,7 +239,7 @@ export default function AboutPage() {
                         <motion.span 
                           initial={{ width: 0 }}
                           whileInView={{ width: `${item.v}%` }}
-                          transition={{ duration: 1.5, ease: "easeOut" }}
+                          transition={{ duration: 1.5, ease: easeOut }}
                           viewport={{ once: true }}
                           style={{ display: 'block', height: '100%', background: '#e82e31', borderRadius: '4px' }}
                         />

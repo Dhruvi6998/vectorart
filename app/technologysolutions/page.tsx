@@ -3,7 +3,7 @@
 import React from 'react';
 import Head from 'next/head';
 import { IoCheckmarkCircle } from "react-icons/io5";
-import { motion } from 'framer-motion';
+import { motion, easeOut } from 'framer-motion';
 
 const TechnologySolutions: React.FC = () => {
     // Reusable animation variant that mimics AOS "fade"
@@ -14,7 +14,7 @@ const TechnologySolutions: React.FC = () => {
         transition: { 
             duration: 0.6, 
             delay: delay / 1000, 
-            ease: "easeOut" 
+            ease: easeOut,
         }
     });
 

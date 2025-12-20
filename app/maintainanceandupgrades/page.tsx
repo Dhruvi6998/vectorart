@@ -1,7 +1,7 @@
 "use client";
 
 import Head from "next/head";
-import { motion } from "framer-motion";
+import { motion, easeOut } from "framer-motion";
 import React from "react";
 
 // Helper component for list items
@@ -20,7 +20,7 @@ const fadeVariant = {
     y: 0,
     transition: {
       duration: 0.8,
-      ease: "easeOut",
+      ease: easeOut,
       delay,
     },
   }),

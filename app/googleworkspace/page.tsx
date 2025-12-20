@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, easeOut } from 'framer-motion';
 import {
     IoCloudDoneOutline,
     IoShieldHalfOutline,
@@ -20,7 +20,7 @@ const fadeInUp = {
         transition: {
             delay: i * 0.1,
             duration: 0.6,
-            ease: "easeOut"
+            ease: easeOut
         }
     })
 };

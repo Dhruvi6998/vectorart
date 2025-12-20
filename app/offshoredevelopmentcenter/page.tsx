@@ -3,7 +3,7 @@
 import Head from 'next/head';
 import React, { useEffect } from 'react';
 import { IoCheckmarkCircle } from "react-icons/io5";
-import { motion } from 'framer-motion';
+import { motion, easeOut} from 'framer-motion';
 
 export default function OffshoreDevelopmentCenter() {
   
@@ -12,7 +12,7 @@ export default function OffshoreDevelopmentCenter() {
     initial: { opacity: 0, y: 20 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true },
-    transition: { duration: 0.6, delay: delay / 1000, ease: "easeOut" }
+    transition: { duration: 0.6, delay: delay / 1000, ease: easeOut}
   });
 
   // Optimized Accordion logic

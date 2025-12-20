@@ -2,7 +2,7 @@
 
 import React from "react";
 import Head from "next/head";
-import { motion } from "framer-motion";
+import { motion , easeOut } from "framer-motion";
 
 // Animation Variants (Mimicking AOS "fade")
 const fadeIn = {
@@ -13,7 +13,7 @@ const fadeIn = {
     transition: {
       duration: 0.6,
       delay: delay / 1000, // Converts AOS ms delay to seconds
-      ease: "easeOut",
+      ease: easeOut,
     },
   }),
 };

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Head from 'next/head';
-import { motion } from 'framer-motion';
+import { motion , easeOut} from 'framer-motion';
 
 // --- Types for clarity and data management ---
 interface GalleryItem {
@@ -99,7 +99,7 @@ const CreativeGallery = () => {
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, amount: 0.2 }}
-    transition={{ duration: 0.6, ease: 'easeOut' }}
+    transition={{ duration: 0.6, ease: easeOut }}
     whileHover={{ scale: 1.05 }} // <-- THIS ENABLES HOVER GROW EFFECT
   >
     <img

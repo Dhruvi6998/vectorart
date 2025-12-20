@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, easeOut } from 'framer-motion';
 import { 
     IoChatbubbleOutline, 
     IoMailUnreadOutline, 
@@ -18,7 +18,7 @@ const fadeIn = {
     visible: (custom: number) => ({
         opacity: 1,
         y: 0,
-        transition: { delay: custom * 0.1, duration: 0.8, ease: "easeOut" }
+        transition: { delay: custom * 0.1, duration: 0.8, ease: easeOut"}
     })
 };
 

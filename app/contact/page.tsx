@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import Script from 'next/script';
-import { motion } from 'framer-motion';
+import { motion , easeOut} from 'framer-motion';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -24,7 +24,7 @@ export default function ContactPage() {
       y: 0,
       transition: {
         duration: 1.2,
-        ease: 'easeOut'
+        ease: easeOut
       }
     }
   };

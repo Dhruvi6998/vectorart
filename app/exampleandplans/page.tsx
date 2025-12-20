@@ -5,7 +5,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { IoCard, IoMegaphone, IoBagCheck} from "react-icons/io5";
 import { IoCheckmarkCircle } from "react-icons/io5";
-import { motion } from 'framer-motion';
+import { motion, easeOut } from 'framer-motion';
 
 const ExampleAndPlansPage: React.FC = () => {
   const [openAccordion, setOpenAccordion] = useState<number | null>(null);
@@ -451,7 +451,7 @@ const ExampleAndPlansPage: React.FC = () => {
                         className="panel"
                         initial={{ maxHeight: 0 }}
                         animate={{ maxHeight: openAccordion === idx ? '1000px' : 0 }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                        transition={{ duration: 0.5, ease: easeOut }}
                       >
                         <div className="container">
                           <div className="row" style={{ margin: '20px' }}>

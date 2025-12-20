@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, easeOut } from "framer-motion";
 
 export default function DigitalMarketing() {
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function DigitalMarketing() {
     transition: (delay = 0) => ({
       duration: 0.8,
       delay,
-      ease: "easeOut",
+      ease: easeOut,
     }),
     viewport: { once: true },
   };
