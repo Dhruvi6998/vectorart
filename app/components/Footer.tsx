@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { IoCall, IoMail, IoNavigate } from "react-icons/io5";
 import Link from "next/link";
-import { motion } from 'framer-motion';
+import { motion, easeOut } from 'framer-motion';
 
 interface Currency {
   code: string;
