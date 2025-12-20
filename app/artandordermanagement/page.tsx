@@ -123,16 +123,20 @@ export default function ArtOrderManagement() {
                     </span>
                   </button>
 
-                  <div
-                    ref={el => (panelRefs.current[i] = el)}
-                    className="accordion-panel"
-                    style={{
-                      maxHeight:
-                        activeIndex === i
-                          ? `${panelRefs.current[i]?.scrollHeight}px`
-                          : '0px',
-                    }}
-                  >
+                 <div
+  ref={el => {
+    panelRefs.current[i] = el; // assignment still happens
+  }}
+  className="accordion-panel"
+  style={{
+    maxHeight:
+      activeIndex === i
+        ? `${panelRefs.current[i]?.scrollHeight}px`
+        : '0px',
+  }}
+>
+  {item.content}
+</div>
                     <div className="panel-content">{item.content}</div>
                   </div>
                 </div>
