@@ -32,7 +32,7 @@ const Footer: React.FC = () => {
       y: 0,
       transition: {
         duration: 1.2,
-        ease: 'easeOut'
+        ease: easeOut
       }
     }
   };
