@@ -5,6 +5,8 @@ import Script from "next/script";
 import AOSRefresher from "./components/AOSRefresher";
 import VLTInit from "./components/VLTInit";
 import AOSInit from './components/AOSInit';
+import Snowflakes from "./components/SnowFlakes";
+import GlobalLoadingSpinner from "./components/GlobalLoadingSpinner";
 export const metadata = {
   title: "Vectorart.co - Graphics & Digital Imaging Service Company",
   description: "Professional graphics & digital imaging services",
@@ -62,42 +64,33 @@ export default function RootLayout({
       </head>
 
       <body>
+          {/* Global Loading Spinner */}
+  <GlobalLoadingSpinner />
         {/* Layout */}
+      
         <AOSInit />
         <Navbar />
+          <Snowflakes />
         {children}
-         <AOSRefresher />
+        <AOSRefresher />
         <Footer />
 
         {/* Init handlers */}
         <VLTInit />
-       
 
         {/* ================== SCRIPTS (ORDER MATTERS) ================== */}
 
         {/* jQuery */}
-        <Script
-          src="/assets/vendors/jquery-3.5.1.min.js"
-          strategy="afterInteractive"
-        />
+        <Script src="/assets/vendors/jquery-3.5.1.min.js" strategy="afterInteractive" />
 
         {/* Core helpers */}
-        <Script
-          src="/assets/scripts/vlt-helpers.js"
-          strategy="afterInteractive"
-        />
+        <Script src="/assets/scripts/vlt-helpers.js" strategy="afterInteractive" />
 
         {/* Plugins */}
-        <Script
-          src="/assets/scripts/vlt-plugins.js"
-          strategy="afterInteractive"
-        />
+        <Script src="/assets/scripts/vlt-plugins.js" strategy="afterInteractive" />
 
         {/* Controllers (ONLY ONE) */}
-        <Script
-          src="/assets/scripts/vlt-controllers.min.js"
-          strategy="afterInteractive"
-        />
+        <Script src="/assets/scripts/vlt-controllers.min.js" strategy="afterInteractive" />
 
         {/* Vendor libraries */}
         <Script src="/assets/vendors/aos.js" strategy="afterInteractive" />
@@ -117,11 +110,7 @@ export default function RootLayout({
           src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.0/dist/sweetalert2.all.min.js"
           strategy="afterInteractive"
         />
-
-        <Script
-          src="https://www.google.com/recaptcha/api.js"
-          strategy="afterInteractive"
-        />
+        <Script src="https://www.google.com/recaptcha/api.js" strategy="afterInteractive" />
       </body>
     </html>
   );

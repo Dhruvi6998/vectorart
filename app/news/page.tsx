@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, cubicBezier} from 'framer-motion';
 
 // --- Animation Variants (Mimes AOS "fade-up" behavior) ---
 const fadeUpVariants = {
@@ -12,7 +12,7 @@ const fadeUpVariants = {
     transition: {
       duration: 0.6,
       delay: delay / 1000, // Converts AOS ms to seconds
-      ease: [0.215, 0.61, 0.355, 1], // Smooth cubic-bezier easing
+         ease: cubicBezier(0.215, 0.61, 0.355, 1),// Smooth cubic-bezier easing
     },
   }),
 };

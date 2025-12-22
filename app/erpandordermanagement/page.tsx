@@ -42,8 +42,7 @@ const ErpOrderManagement: React.FC = () => {
   ];
 
   const iconStyle = { color: "#e82e31", fontSize: '130px' };
-
-  const iconMap: Record<string, JSX.Element> = {
+const iconMap: Record<string, React.ReactElement> = {
     rocket: <IoRocket style={iconStyle} />,
     headset: <IoHeadset style={iconStyle} />,
     settings: <IoSettings style={iconStyle} />,

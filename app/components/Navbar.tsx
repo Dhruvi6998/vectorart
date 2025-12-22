@@ -14,16 +14,16 @@ const Navbar = () => {
   const [isMobile, setIsMobile] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLDivElement>(null);
-  
+
 
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 992);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -38,8 +38,8 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node) && 
-          buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node) &&
+        buttonRef.current && !buttonRef.current.contains(e.target as Node)) {
         setIsPaymentDropdownOpen(false);
       }
     };
@@ -106,9 +106,9 @@ const Navbar = () => {
             alignItems: 'center'
           }}>
             <Link href="/">
-              <Image 
+              <Image
                 src="/assets/img/Heading-Logo.png"
-                alt="Vector Art Logo" 
+                alt="Vector Art Logo"
                 width={180}
                 height={50}
                 style={{ width: '180px', height: 'auto' }}
@@ -158,7 +158,7 @@ const Navbar = () => {
               <Link href="/" style={mobileNavLinkStyle}>Home</Link>
               <Link href="/exampleandplans" style={mobileNavLinkStyle}>Example & Plans</Link>
               <Link href="/portfolio" style={mobileNavLinkStyle}>Portfolio</Link>
-              
+
               {/* Services Mobile */}
               <div>
                 <button
@@ -189,7 +189,7 @@ const Navbar = () => {
                 {openSubmenu === 'solutions' && (
                   <div style={{ paddingLeft: '20px', marginTop: '10px' }}>
                     {solutionsMenu.map((item, idx) => (
-                      <Link key={idx} href={item.href} style={{ ...mobileNavLinkStyle, fontSize: '14px',}}>
+                      <Link key={idx} href={item.href} style={{ ...mobileNavLinkStyle, fontSize: '14px', }}>
                         {item.label}
                       </Link>
                     ))}
@@ -234,13 +234,15 @@ const Navbar = () => {
             justifyContent: 'space-between',
             alignItems: 'center',
             height: '100px'
-          }}>
+          }}
+            onMouseLeave={() => setOpenSubmenu(null)}
+          >
             {/* Logo */}
             <div>
               <Link href="/">
-                <Image 
+                <Image
                   src="/assets/img/Heading-Logo.png"
-                  alt="Vector Art Logo" 
+                  alt="Vector Art Logo"
                   width={260}
                   height={70}
                   style={{ width: '260px', height: 'auto' }}
@@ -253,55 +255,59 @@ const Navbar = () => {
               <Link href="/" style={{
                 ...navButtonStyle,
                 backgroundColor: 'transparent',
-                 
-                
+
+
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                 Home
               </Link>
-              
+
               <Link href="/exampleandplans" style={{
                 ...navButtonStyle,
                 backgroundColor: 'transparent'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                 Example & Plans
               </Link>
-              
+
               <Link href="/portfolio" style={{
                 ...navButtonStyle,
                 backgroundColor: 'transparent'
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                 Portfolio
               </Link>
-              
+
               {/* Services Dropdown */}
-              <div style={{ position: 'relative' }}
-                onMouseEnter={() => setOpenSubmenu('services')}
-                onMouseLeave={() => setOpenSubmenu(null)}>
-                <button style={{
-                  ...navButtonStyle,
-                  backgroundColor: openSubmenu === 'services' ? '#555' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
-                onMouseLeave={(e) => {
-                  if (openSubmenu !== 'services') e.currentTarget.style.backgroundColor = 'transparent'
-                }}>
+              <div style={{ position: 'relative' }}>
+                {/* onMouseEnter={() => setOpenSubmenu('services')}
+                onMouseLeave={() => setOpenSubmenu(null)}> */}
+                <button
+                  onMouseEnter={() => setOpenSubmenu('services')} // opens menu
+                  style={{
+                    ...navButtonStyle,
+                    backgroundColor: openSubmenu === 'services' ? '#555' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                  onMouseLeave={(e) => {
+                    if (openSubmenu !== 'services') e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#555'} // hover color
+                >
                   Services <ChevronDown size={14} />
                 </button>
+
                 {openSubmenu === 'services' && (
                   <div style={dropdownMenuStyle}>
                     {servicesMenu.map((item, idx) => (
-                      <Link 
-                        key={idx} 
-                        href={item.href} 
+                      <Link
+                        key={idx}
+                        href={item.href}
                         style={dropdownItemStyle}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.color = '#E82E31';
@@ -320,28 +326,33 @@ const Navbar = () => {
               </div>
 
               {/* Solutions Dropdown */}
-              <div style={{ position: 'relative' }}
-                onMouseEnter={() => setOpenSubmenu('solutions')}
-                onMouseLeave={() => setOpenSubmenu(null)}>
-                <button style={{
-                  ...navButtonStyle,
-                  backgroundColor: openSubmenu === 'solutions' ? '#555' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '5px'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
-                onMouseLeave={(e) => {
-                  if (openSubmenu !== 'solutions') e.currentTarget.style.backgroundColor = 'transparent'
-                }}>
+              <div style={{ position: 'relative' }} >
+{/* 
+                // onMouseEnter={() => setOpenSubmenu('solutions')}
+                // onMouseLeave={() => setOpenSubmenu(null)}> */}
+                <button
+                  onMouseEnter={() => setOpenSubmenu('solutions')} // opens menu
+                  style={{
+                    ...navButtonStyle,
+                    backgroundColor: openSubmenu === 'solutions' ? '#555' : 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px'
+                  }}
+                  onMouseLeave={(e) => {
+                    if (openSubmenu !== 'solutions') e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#555'} // hover color
+                >
                   Solutions <ChevronDown size={14} />
                 </button>
+
                 {openSubmenu === 'solutions' && (
                   <div style={dropdownMenuStyle}>
                     {solutionsMenu.map((item, idx) => (
-                      <Link 
-                        key={idx} 
-                        href={item.href} 
+                      <Link
+                        key={idx}
+                        href={item.href}
                         style={dropdownItemStyle}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.color = '#E82E31';
@@ -362,31 +373,24 @@ const Navbar = () => {
               {/* Payment Button */}
               <div style={{ position: 'relative', marginLeft: '10px' }}>
                 <div ref={buttonRef} style={paymentContainerStyle}>
-                  <button 
+                  <button
                     onClick={() => setIsPaymentDropdownOpen(!isPaymentDropdownOpen)}
+                    className="PaymentButton-Button PaymentButton-Button--rzpTheme"
                     style={paymentButtonStyle}
                   >
-                    <svg width="18" height="20" viewBox="0 0 18 20" fill="none" style={{ position: 'absolute', left: '11px', top: '10px' }}>
-                      <path d="M7.077 6.476l-.988 3.569 5.65-3.589-3.695 13.54 3.752.004 5.457-20L7.077 6.476z" fill="#fff" />
-                      <path d="M1.455 14.308L0 20h7.202L10.149 8.42l-8.694 5.887z" fill="#fff" />
+                    <svg width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M7.077 6.476l-.988 3.569 5.65-3.589-3.695 13.54 3.752.004 5.457-20L7.077 6.476z" fill="#fff"></path>
+                      <path d="M1.455 14.308L0 20h7.202L10.149 8.42l-8.694 5.887z" fill="#fff"></path>
                     </svg>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '4px 10px 4px 44px', fontFamily: "'Rajdhani', sans-serif" }}>
-                        <span style={{ fontSize: '14px', fontWeight: 500, lineHeight: '18px', opacity: 0.95 }}>
-                          Pay Now
-                        </span>
-                        <div style={{ fontSize: '8px', lineHeight: '10px', opacity: 0.6 }}>
-                          Secured by Razorpay
-                        </div>
+                    <div className="PaymentButton-center">
+                      <div className="PaymentButton-contents">
+                        <span className="PaymentButton-text">Pay Now</span>
+                        <div className="PoweredBy">Secured by Razorpay</div>
                       </div>
-                      <ChevronDown 
-                        size={12} 
-                        style={{ 
-                          marginRight: '10px',
-                          transition: 'transform 0.3s',
-                          transform: isPaymentDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)'
-                        }} 
-                      />
+                      <svg id="dropdown-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+
                     </div>
                   </button>
                 </div>
@@ -420,11 +424,11 @@ const Navbar = () => {
               </div>
             </nav>
           </div>
-        </div>
-      </header>
+        </div >
+      </header >
 
       {/* Spacer for fixed header */}
-      <div style={{ height: '100px' }} />
+      < div style={{ height: '100px' }} />
     </>
   );
 };
@@ -449,7 +453,7 @@ const dropdownMenuStyle: React.CSSProperties = {
   backgroundColor: '#ffffff',
   minWidth: '250px',
   padding: '5px 0',
-  marginTop: '5px',
+  marginTop: '30px',
   borderRadius: '0',
   boxShadow: 'none',
   display: 'flex',

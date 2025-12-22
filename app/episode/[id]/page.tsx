@@ -1,11 +1,28 @@
-// app/episode/[id]/page.js
+// app/episode/[id]/page.tsx
 'use client';
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-const episodes = {
- 
+type EpisodeData = {
+  season: number;
+  episode: number;
+  title: string;
+  date: string;
+  host: string;
+  guest: string;
+  description: string;
+  youtubeId: string;
+  thumbnail: string;
+  spotifyUrl: string;
+  soundcloudUrl: string;
+};
+
+type Episodes = {
+  [key: string]: EpisodeData;
+};
+
+const episodes: Episodes = {
   s2e13: {
     season: 2,
     episode: 13,
@@ -19,7 +36,7 @@ From concept to delivery, Spark transforms branded merchandise into memorable ex
 The evolution of branded merchandise in modern marketing<br />
 How Spark crafts experiences that connect brands and people<br />
 The importance of creative strategy in the promo space<br />
-<b>🎧 Don’t forget to like, comment, and subscribe for more insights from leaders shaping the promo world.</b>`,
+<b>🎧 Don't forget to like, comment, and subscribe for more insights from leaders shaping the promo world.</b>`,
     youtubeId: 'FiuFHvjiQG0',
     thumbnail: '/assets/img/pages/Podcast/Vectorart-podcast logo.jpg',
     spotifyUrl: 'https://open.spotify.com/episode/6YJwxblHuVrKggvUPrAjb8',
@@ -36,12 +53,12 @@ The importance of creative strategy in the promo space<br />
     description: `Impact-driven promotional investments that maximize ROI and visibility.
 Discover how Brandily is reshaping the way businesses approach promotional spending with an emphasis on impact-driven investments.
 
-🔑 What you’ll learn:<br />
+🔑 What you'll learn:<br />
 How promotional spending impacts long-term growth<br />
 Key strategies for maximizing ROI<br />
 Why aligning promotions with brand values creates stronger connections<br />
 Practical advice for businesses looking to scale with promotional products<br />
-<b>👉 Don’t forget to like, comment, and subscribe!</b>`,
+<b>👉 Don't forget to like, comment, and subscribe!</b>`,
     youtubeId: '6rNuDGxOPa0',
     thumbnail: '/assets/img/pages/Podcast/Vectorart-podcast logo.jpg',
     spotifyUrl: 'https://open.spotify.com/episode/6ztqXWZme3PLpnlSn010co',
@@ -77,6 +94,7 @@ How custom gifts strengthen brand identity and emotional connection.`,
     spotifyUrl: 'https://open.spotify.com/episode/472Eql12Nm1T6Gu5s5h51b',
     soundcloudUrl: 'https://soundcloud.com/rohit-jaiswal-518225476'
   },
+
   s2e9: {
     season: 2,
     episode: 9,
@@ -395,7 +413,7 @@ A deep dive into the $26B promotional products industry.`,
 
 export default function Episode() {
   const params = useParams();
-  const id = params.id;
+  const id = typeof params.id === 'string' ? params.id : Array.isArray(params.id) ? params.id[0] : '';
   
   if (!id || !episodes[id]) {
     return (

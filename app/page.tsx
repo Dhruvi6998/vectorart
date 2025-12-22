@@ -3,9 +3,11 @@ import React, { useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { Swiper, SwiperSlide } from 'swiper/react';
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { Variants, easeInOut } from "framer-motion";
 
 const HomePage: React.FC = () => {
   useEffect(() => {
@@ -36,7 +38,7 @@ const HomePage: React.FC = () => {
         });
 
         // Portfolio Slider
-   const portfolioSwiper = new Swiper(".vlt-work-carousel-masonry .swiper-container", {
+        const portfolioSwiper = new Swiper(".vlt-work-carousel-masonry .swiper-container", {
           modules: [Navigation, Autoplay],
           loop: true,
           speed: 1000,
@@ -61,24 +63,26 @@ const HomePage: React.FC = () => {
             1024: { slidesPerView: 3 },
           },
           on: {
-            init: function() {
-              // Update swiper after images load
-              const images = document.querySelectorAll('.vlt-work-carousel-masonry img');
+            init: function (this: any) {
+              const images = document.querySelectorAll<HTMLImageElement>('.vlt-work-carousel-masonry img');
               let loadedCount = 0;
+              const swiperInstance = this;
+
               images.forEach(img => {
                 if (img.complete) {
                   loadedCount++;
                 } else {
                   img.addEventListener('load', () => {
                     loadedCount++;
-                    if (loadedCount === images.length) {
-                      this.update();
+                    if (loadedCount === images.length && swiperInstance?.update) {
+                      swiperInstance.update();
                     }
                   });
                 }
               });
-              if (loadedCount === images.length) {
-                this.update();
+
+              if (loadedCount === images.length && swiperInstance?.update) {
+                swiperInstance.update();
               }
             }
           }
@@ -88,7 +92,6 @@ const HomePage: React.FC = () => {
 
     initSwipers();
   }, []);
-
 
   // Framer Motion variants
   const fadeInVariants = {
@@ -109,7 +112,7 @@ const HomePage: React.FC = () => {
       clipPath: 'inset(0 0% 0 0)',
       transition: {
         duration: 1,
-        ease: "easeInOut"
+        ease: easeInOut
       }
     }
   };

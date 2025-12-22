@@ -2,22 +2,31 @@
 'use client';
 
 import Link from 'next/link';
-import { motion, useInView } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useInView, Variants } from 'framer-motion';
+import { ReactNode, useRef } from 'react';
 
 // ScrollAnimation component to replace AOS
-const ScrollAnimation = ({ 
-  children, 
+interface ScrollAnimationProps {
+  children: ReactNode;
+  animation?: 'fade-up' | 'fade-down' | 'fade-left' | 'fade-right' | 'fade' | 'zoom-in' | 'zoom-out';
+  duration?: number;
+  delay?: number;
+  once?: boolean;
+  className?: string;
+}
+
+const ScrollAnimation: React.FC<ScrollAnimationProps> = ({
+  children,
   animation = 'fade-up',
   duration = 0.6,
   delay = 0,
   once = true,
   className = ''
 }) => {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once, amount: 0.1 });
 
-  const variants = {
+  const variants: Record<string, Variants> = {
     'fade-up': {
       hidden: { opacity: 0, y: 50 },
       visible: { opacity: 1, y: 0 }
@@ -48,25 +57,22 @@ const ScrollAnimation = ({
     }
   };
 
-  const selectedVariant = variants[animation] || variants['fade-up'];
+  const selectedVariant = variants[animation];
 
   return (
     <motion.div
       ref={ref}
       initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
+      animate={isInView ? 'visible' : 'hidden'}
       variants={selectedVariant}
-      transition={{ 
-        duration,
-        delay,
-        ease: [0.25, 0.1, 0.25, 1]
-      }}
+      transition={{ duration, delay, ease: [0.25, 0.1, 0.25, 1] }}
       className={className}
     >
       {children}
     </motion.div>
   );
 };
+
 
 export default function Podcast() {
   return (
@@ -719,31 +725,50 @@ export default function Podcast() {
           </section>
 
           {/* Videos Slider Section */}
-          <section>
-            <div>
-              <div className="box-cont" style={{ margin: '0 auto', padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
-                <ScrollAnimation animation="fade-right" duration={0.8}>
-                  <div style={{ width: '100%', marginBottom: '24px', flex: 1 }}>
-                    <h2 style={{ fontSize: '0.875rem', fontWeight: '600', color: '#4a5568', marginBottom: '8px' }}>VECTORART VIDEOS</h2>
-                    <h1 style={{ fontSize: '1.875rem', fontWeight: '700', color: '#2d3748', marginBottom: '16px' }}>Vectorart podcast on YouTube</h1>
-                    <p style={{ fontSize: '1.125rem', color: '#4a5568', marginBottom: '24px' }}>From podcasts and webinars to research and culture, Vectorart repository of videos offers something for everyone.</p>
-                    <a href="https://www.youtube.com/@VectorArt-u3q" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', backgroundColor: '#e53e3e', color: '#fff', fontSize: '0.875rem', fontWeight: '600', padding: '12px 24px', borderRadius: '4px' }}>GO TO OUR YOUTUBE PAGE &gt;</a>
-                  </div>
-                </ScrollAnimation>
-                
-                <ScrollAnimation animation="fade-left" duration={0.8} delay={0.2}>
-                  <div className="slider-container">
-                    <div className="slider">
-                      <iframe width="100%" height="500" src="https://www.youtube.com/embed/TCsqYEzMlZE" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-                      <iframe width="100%" height="500" src="https://www.youtube.com/embed/lEzV3lI5bOg" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-                      <iframe width="100%" height="500" src="https://www.youtube.com/embed/Q1rpr0jXUdE" title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-                    </div>
-                  </div>
-                </ScrollAnimation>
-              </div>
-            </div>
-          </section>
-
+          <section style={{ backgroundColor: '#f7fafc', padding: '60px 20px' }}>
+  <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '32px' }}>
+    <ScrollAnimation animation="fade-right" duration={0.8}>
+      <div style={{ flex: 1 }}>
+        <h2 style={{ fontSize: '1rem', fontWeight: '600', color: '#e53e3e', letterSpacing: '1px', marginBottom: '12px' }}>
+          VECTORART VIDEOS
+        </h2>
+        <h1 style={{ fontSize: '2.5rem', fontWeight: '700', color: '#2d3748', lineHeight: '1.2', marginBottom: '20px' }}>
+          Vectorart Podcast on YouTube
+        </h1>
+        <p style={{ fontSize: '1.125rem', color: '#4a5568', marginBottom: '32px', maxWidth: '700px' }}>
+          From podcasts and webinars to research and culture, Vectorart’s video repository offers something for everyone. Explore, learn, and stay inspired with our curated content.
+        </p>
+        <a
+          href="https://www.youtube.com/@Vectorartusaofficial"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-block',
+            background: 'linear-gradient(90deg, #e53e3e, #f56565)',
+            color: '#fff',
+            fontSize: '0.875rem',
+            fontWeight: '600',
+            padding: '14px 28px',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            textDecoration: 'none',
+            transition: 'all 0.3s ease',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-2px)';
+            (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 6px 16px rgba(0,0,0,0.15)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(0)';
+            (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+          }}
+        >
+          GO TO OUR YOUTUBE PAGE &gt;
+        </a>
+      </div>
+    </ScrollAnimation>
+  </div>
+</section>
           {/* CTA */}
           <section>
             <div style={{ backgroundColor: '#f7fafc' }}>

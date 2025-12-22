@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import Head from 'next/head';
-import { motion } from 'framer-motion';
+import { motion, easeInOut } from 'framer-motion';
 
 const PromoVirtuals: React.FC = () => {
   const sliderImages = [
@@ -57,11 +57,11 @@ const PromoVirtuals: React.FC = () => {
   const fadeUp = (delay: number = 0) => ({
     initial: { opacity: 0, y: 30 },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true }, // Mimics AOS default (prevents re-triggering on scroll up)
+    viewport: { once: true },
     transition: { 
       duration: 0.7, 
       delay: delay / 1000, 
-      ease: [0.215, 0.61, 0.355, 1.0] // Mimics AOS "ease-out-quad"
+      ease: [0.215, 0.61, 0.355, 1.0] as const
     }
   });
 

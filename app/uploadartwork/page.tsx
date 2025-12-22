@@ -3,21 +3,21 @@
 
 import { useState } from 'react';
 import Swal from 'sweetalert2';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 
-// Mimics AOS "fade" behavior
-const fadeUp = {
+// TS-safe fadeUp variant generator
+const fadeUp = (delay = 0): Variants => ({
   hidden: { opacity: 0, y: 20 },
-  visible: (delay: number) => ({
+  visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.6,
-      delay: delay / 1000,
-      ease: [0.215, 0.61, 0.355, 1]
+      delay,       // delay in seconds
+      ease: "easeInOut"
     }
-  })
-};
+  }
+});
 
 export default function UploadArtwork() {
   const [formData, setFormData] = useState({
@@ -34,7 +34,6 @@ export default function UploadArtwork() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-    
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -53,22 +52,12 @@ export default function UploadArtwork() {
 
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('companyName', formData.companyName);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('phone', formData.phone);
-      formDataToSend.append('orderInformation', formData.orderInformation);
-      formDataToSend.append('agree', formData.agree.toString());
-      
-      if (file) {
-        formDataToSend.append('file', file);
-      }
-
-      const response = await fetch('/api/uploadartwork', {
-        method: 'POST',
-        body: formDataToSend
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value.toString());
       });
+      if (file) formDataToSend.append('file', file);
 
+      const response = await fetch('/api/uploadartwork', { method: 'POST', body: formDataToSend });
       const result = await response.json();
 
       if (response.ok) {
@@ -77,30 +66,14 @@ export default function UploadArtwork() {
           text: 'We got your message! Our team will get back to you shortly.',
           icon: 'success'
         });
-        
-        setFormData({
-          name: '',
-          companyName: '',
-          email: '',
-          phone: '',
-          orderInformation: '',
-          agree: false
-        });
+        setFormData({ name: '', companyName: '', email: '', phone: '', orderInformation: '', agree: false });
         setFile(null);
         (e.target as HTMLFormElement).reset();
       } else {
-        await Swal.fire({
-          title: 'Error!',
-          text: result.error || 'Something went wrong. Please try again.',
-          icon: 'error'
-        });
+        await Swal.fire({ title: 'Error!', text: result.error || 'Something went wrong.', icon: 'error' });
       }
     } catch (error) {
-      await Swal.fire({
-        title: 'Error!',
-        text: 'Failed to send message. Please try again.',
-        icon: 'error'
-      });
+      await Swal.fire({ title: 'Error!', text: 'Failed to send message.', icon: 'error' });
     } finally {
       setIsSubmitting(false);
     }
@@ -109,7 +82,7 @@ export default function UploadArtwork() {
   return (
     <>
       <div className="vlt-site-overlay"></div>
-      
+
       <main className="vlt-main">
         <div className="vlt-page-content">
           {/* Hero Section */}
@@ -118,7 +91,7 @@ export default function UploadArtwork() {
               <div className="container">
                 <div className="row">
                   <div className="col-md-6">
-                    <h1 className="vlt-page-title__title" style={{ color: 'white', fontSize: "4rem" , fontWeight: "700"}}>
+                    <h1 className="vlt-page-title__title" style={{ color: 'white', fontSize: "4rem", fontWeight: "700" }}>
                       Artwork Upload
                     </h1>
                   </div>
@@ -128,134 +101,132 @@ export default function UploadArtwork() {
             <div className="vlt-gap-150"></div>
           </section>
 
+          {/* Form Section */}
           <section>
             <div className="vlt-gap-120"></div>
             <div className="container">
               <div className="row">
                 <div className="col-lg-12">
-                  <motion.div 
+                  <motion.div
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
-                    variants={fadeUp}
-                    custom={0}
+                    variants={fadeUp(0)}
                   >
                     <h2 className="text-center">Artwork Upload Form</h2>
                   </motion.div>
-                  
+
                   <div className="vlt-gap-30"></div>
-                  
-                  <motion.div 
+
+                  <motion.div
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
-                    variants={fadeUp}
-                    custom={0}
+                    variants={fadeUp(0.1)}
                   >
-                    <h4>If you are interested in having produce your printed product (t-shirts, business cards, promotional product, etc.), we will need your artwork file.</h4>
+                    <h4>If you are interested in producing your printed product (t-shirts, business cards, promotional product, etc.), we will need your artwork file.</h4>
                   </motion.div>
-                  
+
                   <div className="vlt-gap-60"></div>
                 </div>
-                
+
                 <div className="col-lg-12">
-                  <motion.div 
+                  <motion.div
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
-                    variants={fadeUp}
-                    custom={100}
+                    variants={fadeUp(0.2)}
                   >
                     <form onSubmit={handleSubmit}>
                       <div className="vlt-form-row two-col">
                         <div className="vlt-form-group">
-                          <input 
-                            className="vlt-form-control" 
-                            type="text" 
-                            name="name" 
+                          <input
+                            className="vlt-form-control"
+                            type="text"
+                            name="name"
                             value={formData.name}
                             onChange={handleInputChange}
-                            required 
-                            placeholder=" " 
+                            required
+                            placeholder=" "
                           />
                           <label className="vlt-form-label">Name*</label>
                         </div>
                         <div className="vlt-form-group">
-                          <input 
-                            className="vlt-form-control" 
-                            type="text" 
-                            name="companyName" 
+                          <input
+                            className="vlt-form-control"
+                            type="text"
+                            name="companyName"
                             value={formData.companyName}
                             onChange={handleInputChange}
-                            required 
-                            placeholder=" " 
+                            required
+                            placeholder=" "
                           />
                           <label className="vlt-form-label">Company name*</label>
                         </div>
                       </div>
-                      
+
                       <div className="vlt-form-row two-col">
                         <div className="vlt-form-group">
-                          <input 
-                            className="vlt-form-control" 
-                            type="email" 
-                            name="email" 
+                          <input
+                            className="vlt-form-control"
+                            type="email"
+                            name="email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            placeholder=" " 
-                            required 
+                            placeholder=" "
+                            required
                           />
                           <label className="vlt-form-label">Email address*</label>
                         </div>
                         <div className="vlt-form-group">
-                          <input 
-                            className="vlt-form-control" 
-                            type="text" 
-                            name="phone" 
+                          <input
+                            className="vlt-form-control"
+                            type="text"
+                            name="phone"
                             value={formData.phone}
                             onChange={handleInputChange}
-                            placeholder=" " 
-                            required 
+                            placeholder=" "
+                            required
                           />
                           <label className="vlt-form-label">Phone number</label>
                         </div>
                       </div>
-                      
+
                       <div className="vlt-form-group">
-                        <input 
-                          type="file" 
-                          className="vlt-form-control" 
+                        <input
+                          type="file"
+                          className="vlt-form-control"
                           name="file"
                           onChange={handleFileChange}
                         />
                       </div>
-                      
+
                       <div className="vlt-form-group">
-                        <textarea 
-                          className="vlt-form-control" 
-                          name="orderInformation" 
+                        <textarea
+                          className="vlt-form-control"
+                          name="orderInformation"
                           value={formData.orderInformation}
                           onChange={handleInputChange}
-                          rows={5} 
+                          rows={5}
                           placeholder=" "
                         ></textarea>
                         <label className="vlt-form-label">Order information or notes</label>
                       </div>
-                      
+
                       <div className="vlt-form-group">
-                        <input 
-                          type="checkbox" 
-                          className="vlt-form-control" 
+                        <input
+                          type="checkbox"
+                          className="vlt-form-control"
                           name="agree"
                           checked={formData.agree}
                           onChange={handleInputChange}
-                          required 
+                          required
                         />
                         <label style={{ marginLeft: '8px' }}>I Agree to Receive Promotional Discounts & Newsletters</label>
                       </div>
 
-                      <button 
-                        className="vlt-btn vlt-btn--secondary vlt-btn--lg" 
+                      <button
+                        className="vlt-btn vlt-btn--secondary vlt-btn--lg"
                         type="submit"
                         disabled={isSubmitting}
                       >
@@ -263,36 +234,30 @@ export default function UploadArtwork() {
                       </button>
                     </form>
                   </motion.div>
-                  
+
                   <div className="vlt-gap-60"></div>
-                  
-                  <div className="row">
-                    <motion.div 
-                      className="col-12"
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true }}
-                      variants={fadeUp}
-                      custom={0}
-                    >
-                      <h5>Vector Art is the best to send us [common extensions include: .ai, .eps, .fla & .cdr]. We also accept design in raster formats [common extensions include: .jpg, .psd, .png & .gif], the higher the resolution the better. For more information on what files and file types work best.</h5>
-                    </motion.div>
-                  </div>
-                  
+
+                  <motion.div
+                    className="col-12"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={fadeUp(0.3)}
+                  >
+                    <h5>Vector Art is the best to send us [common extensions include: .ai, .eps, .fla & .cdr]. We also accept design in raster formats [common extensions include: .jpg, .psd, .png & .gif], the higher the resolution the better. For more information on what files and file types work best.</h5>
+                  </motion.div>
+
                   <div className="vlt-gap-30"></div>
-                  
-                  <div className="row">
-                    <motion.div 
-                      className="col-12"
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true }}
-                      variants={fadeUp}
-                      custom={0}
-                    >
-                      <h5>Please mail on info@vectorart.co if you have any questions or concerns.</h5>
-                    </motion.div>
-                  </div>
+
+                  <motion.div
+                    className="col-12"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={fadeUp(0.4)}
+                  >
+                    <h5>Please mail on info@vectorart.co if you have any questions or concerns.</h5>
+                  </motion.div>
                 </div>
               </div>
             </div>

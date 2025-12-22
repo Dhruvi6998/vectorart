@@ -18,7 +18,7 @@ const fadeIn = {
     visible: (custom: number) => ({
         opacity: 1,
         y: 0,
-        transition: { delay: custom * 0.1, duration: 0.8, ease: easeOut"}
+        transition: { delay: custom * 0.1, duration: 0.8, ease: easeOut}
     })
 };
 

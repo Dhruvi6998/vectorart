@@ -1,13 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { ReactNode, useRef } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
-import { useRef } from "react";
+// import { useRef } from "react";
 
 // Custom hook to replicate AOS behavior
-function AnimatedSection({ children, delay = 0 }) {
-  const ref = useRef(null);
+interface AnimatedSectionProps {
+  children: ReactNode;
+  delay?: number;
+}
+
+// Functional component with typed props
+function AnimatedSection({ children, delay = 0 }: AnimatedSectionProps) {
+  const ref = useRef<HTMLDivElement | null>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, easeOut } from 'framer-motion';
+import { motion, easeOut, cubicBezier } from 'framer-motion';
 import Head from 'next/head';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -13,7 +13,7 @@ const fadeInUp = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: [0.215, 0.61, 0.355, 1],
+      ease: cubicBezier(0.215, 0.61, 0.355, 1),
     },
   },
 };

@@ -78,29 +78,50 @@ export default function ArtOrderManagement() {
 
       <main className="vlt-main">
         {/* Hero */}
-        <section
-          className="hero"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)), url('/assets/img/pages/artandordermanagement/artandordermanagementbg.jpg')",
-          }}
-        >
-          <div className="container">
-            <h1>Art & Order Management</h1>
-          </div>
-        </section>
+     
+          {/* HERO */}
+          <section
+            className="has-white-color"
+            style={{
+              backgroundImage: "url(assets/img/pages/aboutus/aboutusbg.jpg)",
+              backgroundRepeat: "no-repeat",
+              backgroundSize: "cover",
+            }}
+          >
+            <div className="vlt-page-title vlt-page-title--style-4">
+              <div className="container">
+                <div className="row">
+                  <div className="col-md-6">
+                    <h1
+                      className="vlt-page-title__title"
+                      style={{
+                        color: "white",
+                        fontSize: "4rem",
+                        fontWeight: "700",
+                      }}
+                    >
+                     Art and Order Management
+                    </h1>
+                  </div>
+                  <div className="col-md-6"></div>
+                </div>
+              </div>
+            </div>
+            <div className="vlt-gap-150"></div>
+          </section>
 
+          
         {/* Intro */}
         <section className="container intro">
           <h2>In Brief</h2>
           <p>
-            Everything we do begins with your success. Our teams analyze your
-            workflows, systems, and challenges to deliver a service model that
-            fits you perfectly.
+          In everything we do, the starting point is always the same – your success. Our service mission is to understand and rapidly amplify the strengths that make you a success, and equally, identify and manage your top challenges and opportunities.
           </p>
           <p>
-            The result is faster turnaround, consistent quality, and significant
-            cost savings—freeing your team to focus on customers and growth.
+            Our transition team studies in detail your processes, the systems that support them and connects with the people that drive them. They then design and implement a delivery service that fits your needs exactly. We replicate the best parts, and work with you to improve things wherever we see an opportunity.
+          </p>
+          <p>
+            The outcome is fast, high quality, value-added delivery of processed art and orders, day in day out. So you save on costs, management time and uncertainty. And you liberate the time to truly engage with customers.
           </p>
         </section>
 
@@ -159,9 +180,9 @@ export default function ArtOrderManagement() {
           <h3>The Vector Triple Advantage</h3>
           <div className="grid">
             <div className="buttons">
-              <span>Guaranteed Savings</span>
-              <span>Guaranteed Delivery</span>
-              <span>Guaranteed Value</span>
+              <span style = {{backgroundColor:"#e82e31"}}>Guaranteed Savings</span>
+              <span style = {{backgroundColor:"#e82e31"}}>Guaranteed Delivery</span>
+              <span style = {{backgroundColor:"#e82e31"}}>Guaranteed Value</span>
             </div>
             <div>
               <p>
