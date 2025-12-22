@@ -240,9 +240,9 @@ export default function PenToolPage() {
             >
               <img
                 alt="Vector Art logo"
-                height="100"
+                height="900"
                 src="/assets/img/pages/PenToolImages/5.jpg"
-                width="200"
+                width="800"
                 style={{ borderRadius: '5px' }}
               />
             </motion.div>

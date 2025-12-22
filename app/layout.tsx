@@ -8,6 +8,8 @@ import AOSInit from './components/AOSInit';
 import Snowflakes from "./components/SnowFlakes";
 import { Suspense } from 'react';
 import ClientOnlySpinner from "./components/ClientOnlySpinner";
+import ScrollProgressCircle from './components/ScrollProgressCircle';
+
 export const metadata = {
   title: "Vectorart.co - Graphics & Digital Imaging Service Company",
   description: "Professional graphics & digital imaging services",
@@ -77,6 +79,7 @@ export default function RootLayout({
         {children}
         <AOSRefresher />
         <Footer />
+          <ScrollProgressCircle />
 
         {/* Init handlers */}
         <VLTInit />

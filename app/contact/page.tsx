@@ -65,7 +65,7 @@ export default function ContactPage() {
     }
 
     try {
-      const response = await fetch('/api/pentool', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
