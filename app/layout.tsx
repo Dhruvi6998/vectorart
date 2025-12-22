@@ -6,7 +6,8 @@ import AOSRefresher from "./components/AOSRefresher";
 import VLTInit from "./components/VLTInit";
 import AOSInit from './components/AOSInit';
 import Snowflakes from "./components/SnowFlakes";
-import GlobalLoadingSpinner from "./components/GlobalLoadingSpinner";
+import { Suspense } from 'react';
+import ClientOnlySpinner from "./components/ClientOnlySpinner";
 export const metadata = {
   title: "Vectorart.co - Graphics & Digital Imaging Service Company",
   description: "Professional graphics & digital imaging services",
@@ -64,8 +65,10 @@ export default function RootLayout({
       </head>
 
       <body>
-          {/* Global Loading Spinner */}
-  <GlobalLoadingSpinner />
+ {/* Safe for server components */}
+        <Suspense fallback={null}>
+          <ClientOnlySpinner />
+        </Suspense>
         {/* Layout */}
       
         <AOSInit />
