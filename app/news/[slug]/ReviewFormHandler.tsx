@@ -50,12 +50,12 @@ export default function ReviewFormHandler() {
         
         if (submitButton) {
           // Create reCAPTCHA container
-          recaptchaContainer = document.createElement('div');
-          recaptchaContainer.className = 'recaptcha-container';
-          recaptchaContainer.style.marginBottom = '20px';
-          recaptchaContainer.style.display = 'flex';
-          recaptchaContainer.style.justifyContent = 'center';
-          
+const recaptchaContainer = document.createElement('div') as HTMLDivElement; // <-- type cast
+    recaptchaContainer.className = 'recaptcha-container';
+    recaptchaContainer.style.marginBottom = '20px';
+    recaptchaContainer.style.display = 'flex';
+    recaptchaContainer.style.justifyContent = 'center';
+
           // Create the actual reCAPTCHA div
           const recaptchaDiv = document.createElement('div');
           recaptchaDiv.className = `g-recaptcha-${formId}`;
