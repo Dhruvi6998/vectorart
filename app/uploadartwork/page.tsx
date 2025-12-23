@@ -1,9 +1,17 @@
 // app/upload-artwork/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { motion, Variants } from 'framer-motion';
+import Script from 'next/script';
+
+// Declare global grecaptcha type
+declare global {
+  interface Window {
+    grecaptcha: any;
+  }
+}
 
 // TS-safe fadeUp variant generator
 const fadeUp = (delay = 0): Variants => ({
@@ -13,7 +21,7 @@ const fadeUp = (delay = 0): Variants => ({
     y: 0,
     transition: {
       duration: 0.6,
-      delay,       // delay in seconds
+      delay,
       ease: "easeInOut"
     }
   }
@@ -30,6 +38,10 @@ export default function UploadArtwork() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+
+  // Get reCAPTCHA site key from environment variable
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY_ARTWORK;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -48,6 +60,28 @@ export default function UploadArtwork() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!recaptchaSiteKey) {
+      await Swal.fire({
+        title: 'Configuration Error',
+        text: 'reCAPTCHA is not properly configured. Please contact support.',
+        icon: 'error'
+      });
+      return;
+    }
+
+    // Get reCAPTCHA token
+    const recaptchaResponse = window.grecaptcha.getResponse();
+    
+    if (!recaptchaResponse) {
+      await Swal.fire({
+        title: 'Verification Required',
+        text: 'Please complete the reCAPTCHA verification.',
+        icon: 'warning'
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -56,8 +90,12 @@ export default function UploadArtwork() {
         formDataToSend.append(key, value.toString());
       });
       if (file) formDataToSend.append('file', file);
+      formDataToSend.append('recaptchaToken', recaptchaResponse);
 
-      const response = await fetch('/api/uploadartwork', { method: 'POST', body: formDataToSend });
+      const response = await fetch('/api/uploadartwork', { 
+        method: 'POST', 
+        body: formDataToSend 
+      });
       const result = await response.json();
 
       if (response.ok) {
@@ -66,14 +104,32 @@ export default function UploadArtwork() {
           text: 'We got your message! Our team will get back to you shortly.',
           icon: 'success'
         });
-        setFormData({ name: '', companyName: '', email: '', phone: '', orderInformation: '', agree: false });
+        setFormData({ 
+          name: '', 
+          companyName: '', 
+          email: '', 
+          phone: '', 
+          orderInformation: '', 
+          agree: false 
+        });
         setFile(null);
         (e.target as HTMLFormElement).reset();
+        window.grecaptcha.reset();
       } else {
-        await Swal.fire({ title: 'Error!', text: result.error || 'Something went wrong.', icon: 'error' });
+        await Swal.fire({ 
+          title: 'Error!', 
+          text: result.error || 'Something went wrong.', 
+          icon: 'error' 
+        });
+        window.grecaptcha.reset();
       }
     } catch (error) {
-      await Swal.fire({ title: 'Error!', text: 'Failed to send message.', icon: 'error' });
+      await Swal.fire({ 
+        title: 'Error!', 
+        text: 'Failed to send message.', 
+        icon: 'error' 
+      });
+      window.grecaptcha.reset();
     } finally {
       setIsSubmitting(false);
     }
@@ -81,17 +137,32 @@ export default function UploadArtwork() {
 
   return (
     <>
+      {/* Load reCAPTCHA script */}
+      <Script
+        src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`}
+        onLoad={() => setRecaptchaLoaded(true)}
+        strategy="lazyOnload"
+      />
+
       <div className="vlt-site-overlay"></div>
 
       <main className="vlt-main">
         <div className="vlt-page-content">
           {/* Hero Section */}
-          <section className="has-white-color" style={{ backgroundImage: 'url(/assets/img/pages/aboutus/aboutusbg.jpg)', backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }}>
+          <section className="has-white-color" style={{ 
+            backgroundImage: 'url(/assets/img/pages/aboutus/aboutusbg.jpg)', 
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'cover' 
+          }}>
             <div className="vlt-page-title vlt-page-title--style-4">
               <div className="container">
                 <div className="row">
                   <div className="col-md-6">
-                    <h1 className="vlt-page-title__title" style={{ color: 'white', fontSize: "4rem", fontWeight: "700" }}>
+                    <h1 className="vlt-page-title__title" style={{ 
+                      color: 'white', 
+                      fontSize: "4rem", 
+                      fontWeight: "700" 
+                    }}>
                       Artwork Upload
                     </h1>
                   </div>
@@ -222,13 +293,29 @@ export default function UploadArtwork() {
                           onChange={handleInputChange}
                           required
                         />
-                        <label style={{ marginLeft: '8px' }}>I Agree to Receive Promotional Discounts & Newsletters</label>
+                        <label style={{ marginLeft: '8px' }}>
+                          I Agree to Receive Promotional Discounts & Newsletters
+                        </label>
+                      </div>
+
+                      {/* reCAPTCHA */}
+                      <div className="vlt-form-group" style={{ marginBottom: '20px' }}>
+                        {recaptchaSiteKey ? (
+                          <div 
+                            className="g-recaptcha" 
+                            data-sitekey={recaptchaSiteKey}
+                          ></div>
+                        ) : (
+                          <div className="alert alert-warning">
+                            reCAPTCHA is not configured. Please set <code>NEXT_PUBLIC_RECAPTCHA_SITE_KEY</code> in your environment variables.
+                          </div>
+                        )}
                       </div>
 
                       <button
                         className="vlt-btn vlt-btn--secondary vlt-btn--lg"
                         type="submit"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || !recaptchaSiteKey}
                       >
                         {isSubmitting ? 'Sending...' : 'Submit'}
                       </button>

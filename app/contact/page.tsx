@@ -1,9 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Head from 'next/head';
-import Script from 'next/script';
-import { motion , easeOut} from 'framer-motion';
+import { motion, easeOut } from 'framer-motion';
+
+// Declare global types
+declare global {
+  interface Window {
+    grecaptcha: any;
+    onRecaptchaLoadCallback?: () => void;
+  }
+}
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -15,18 +22,20 @@ export default function ContactPage() {
     agreeToNewsLetter: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+  const recaptchaRendered = useRef(false);
 
   // Animation variants
   const fadeVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { 
+    visible: {
       opacity: 1,
       y: 0,
       transition: {
         duration: 1.2,
-        ease: easeOut
-      }
-    }
+        ease: easeOut,
+      },
+    },
   };
 
   // State to track which elements have animated
@@ -39,12 +48,96 @@ export default function ContactPage() {
     map: false,
   });
 
+  // Get reCAPTCHA site key from environment variable
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY;
+
+  // Load and render reCAPTCHA
+  useEffect(() => {
+    // Function to render reCAPTCHA
+    const renderRecaptcha = () => {
+      if (recaptchaRendered.current || !recaptchaSiteKey) return;
+      
+      const recaptchaContainer = document.querySelector('.g-recaptcha');
+      
+      if (recaptchaContainer && window.grecaptcha && window.grecaptcha.render) {
+        try {
+          // Clear any existing content
+          recaptchaContainer.innerHTML = '';
+          
+          window.grecaptcha.render(recaptchaContainer, {
+            sitekey: recaptchaSiteKey,
+          });
+          
+          recaptchaRendered.current = true;
+          setRecaptchaLoaded(true);
+          console.log('✅ reCAPTCHA rendered successfully');
+        } catch (error) {
+          console.error('❌ Failed to render reCAPTCHA:', error);
+        }
+      }
+    };
+
+    // Load reCAPTCHA script
+    const loadRecaptchaScript = () => {
+      // Check if script already exists
+      if (document.getElementById('recaptcha-script')) {
+        // Script exists, check if grecaptcha is ready
+        if (window.grecaptcha && window.grecaptcha.render) {
+          renderRecaptcha();
+        }
+        return;
+      }
+
+      // Create and load script
+      const script = document.createElement('script');
+      script.id = 'recaptcha-script';
+      script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoadCallback&render=explicit';
+      script.async = true;
+      script.defer = true;
+
+      // Global callback for when reCAPTCHA loads
+      window.onRecaptchaLoadCallback = () => {
+        console.log('✅ reCAPTCHA script loaded');
+        renderRecaptcha();
+      };
+
+      document.head.appendChild(script);
+    };
+
+    // Check if site key is available
+    if (!recaptchaSiteKey) {
+      console.error('❌ reCAPTCHA site key is missing. Please check your .env.local file');
+      return;
+    }
+
+    // Try to render reCAPTCHA multiple times with delays
+    const delays = [0, 100, 300, 500, 1000];
+    const timeouts: NodeJS.Timeout[] = [];
+
+    delays.forEach((delay) => {
+      const timeout = setTimeout(() => {
+        if (!recaptchaRendered.current) {
+          renderRecaptcha();
+        }
+      }, delay);
+      timeouts.push(timeout);
+    });
+
+    // Initial load
+    loadRecaptchaScript();
+
+    // Cleanup
+    return () => {
+      timeouts.forEach((timeout) => clearTimeout(timeout));
+    };
+  }, [recaptchaSiteKey]);
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value, type } = e.target;
     const checked = (e.target as HTMLInputElement).checked;
-    
+
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
@@ -56,10 +149,20 @@ export default function ContactPage() {
     setIsSubmitting(true);
 
     // Get reCAPTCHA token
-    const recaptchaToken = (window as any).grecaptcha.getResponse();
+    let recaptchaToken = '';
+    
+    try {
+      recaptchaToken = window.grecaptcha.getResponse();
+    } catch (error) {
+      console.error('Error getting reCAPTCHA response:', error);
+    }
 
     if (!recaptchaToken) {
-      alert('Please complete the reCAPTCHA verification');
+      (window as any).Swal.fire({
+        title: 'Verification Required',
+        text: 'Please complete the reCAPTCHA verification',
+        icon: 'warning',
+      });
       setIsSubmitting(false);
       return;
     }
@@ -82,7 +185,7 @@ export default function ContactPage() {
         // Show success message using SweetAlert2
         (window as any).Swal.fire({
           title: 'Message Sent!',
-          text: "We got your message! Our team will get back to you shortly.",
+          text: 'We got your message! Our team will get back to you shortly.',
           icon: 'success',
         });
 
@@ -95,16 +198,28 @@ export default function ContactPage() {
           message: '',
           agreeToNewsLetter: false,
         });
-        (window as any).grecaptcha.reset();
+        
+        // Reset reCAPTCHA
+        if (window.grecaptcha) {
+          window.grecaptcha.reset();
+        }
       } else {
         throw new Error(data.message || 'Failed to send message');
       }
     } catch (error) {
       (window as any).Swal.fire({
         title: 'Error',
-        text: error instanceof Error ? error.message : 'Failed to send message. Please try again.',
+        text:
+          error instanceof Error
+            ? error.message
+            : 'Failed to send message. Please try again.',
         icon: 'error',
       });
+      
+      // Reset reCAPTCHA on error
+      if (window.grecaptcha) {
+        window.grecaptcha.reset();
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -120,12 +235,6 @@ export default function ContactPage() {
           content="Get in touch with us for all your inquiries, feedback, and assistance. We're here to help! Contact us today."
         />
       </Head>
-
-      {/* Load reCAPTCHA */}
-      <Script
-        src="https://www.google.com/recaptcha/api.js"
-        strategy="lazyOnload"
-      />
 
       {/* Site overlay */}
       <div className="vlt-site-overlay"></div>
@@ -147,7 +256,10 @@ export default function ContactPage() {
               <div className="container">
                 <div className="row">
                   <div className="col-md-6">
-                    <h1 className="vlt-page-title__title" style={{ color: 'white', fontSize: "4rem" , fontWeight:"700"}}>
+                    <h1
+                      className="vlt-page-title__title"
+                      style={{ color: 'white', fontSize: '4rem', fontWeight: '700' }}
+                    >
                       Contact Us
                     </h1>
                   </div>
@@ -164,11 +276,13 @@ export default function ContactPage() {
               <div className="row">
                 <div className="col-lg-12">
                   {/* Animated block */}
-                  <motion.div 
+                  <motion.div
                     className="vlt-animated-block"
                     initial="hidden"
-                    animate={animatedElements.title ? "visible" : "hidden"}
-                    onViewportEnter={() => setAnimatedElements(prev => ({ ...prev, title: true }))}
+                    animate={animatedElements.title ? 'visible' : 'hidden'}
+                    onViewportEnter={() =>
+                      setAnimatedElements((prev) => ({ ...prev, title: true }))
+                    }
                     viewport={{ once: true, amount: 0.3 }}
                     variants={fadeVariants}
                   >
@@ -179,11 +293,13 @@ export default function ContactPage() {
 
                 <div className="col-lg-8">
                   {/* Animated block */}
-                  <motion.div 
+                  <motion.div
                     className="vlt-animated-block"
                     initial="hidden"
-                    animate={animatedElements.form ? "visible" : "hidden"}
-                    onViewportEnter={() => setAnimatedElements(prev => ({ ...prev, form: true }))}
+                    animate={animatedElements.form ? 'visible' : 'hidden'}
+                    onViewportEnter={() =>
+                      setAnimatedElements((prev) => ({ ...prev, form: true }))
+                    }
                     viewport={{ once: true, amount: 0.3 }}
                     variants={fadeVariants}
                   >
@@ -254,7 +370,9 @@ export default function ContactPage() {
                       </div>
 
                       <div className="vlt-form-group">
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <label
+                          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                        >
                           <input
                             type="checkbox"
                             name="agreeToNewsLetter"
@@ -263,16 +381,20 @@ export default function ContactPage() {
                             onChange={handleInputChange}
                             style={{ width: 'auto', margin: 0 }}
                           />
-                          <span>I Agree to Receive Promotional Discounts & Newsletters</span>
+                          <span>
+                            I Agree to Receive Promotional Discounts & Newsletters
+                          </span>
                         </label>
                       </div>
 
                       {/* Google reCAPTCHA */}
-                      <div className="vlt-form-group">
-                        <div
-                          className="g-recaptcha"
-                          data-sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY}
-                        ></div>
+                      <div className="vlt-form-group" style={{ marginBottom: '20px' }}>
+                        <div className="g-recaptcha"></div>
+                        {!recaptchaSiteKey && (
+                          <div className="text-danger mt-2">
+                            Warning: reCAPTCHA site key is missing. Please check your environment configuration.
+                          </div>
+                        )}
                       </div>
 
                       <div className="vlt-gap-40"></div>
@@ -281,7 +403,7 @@ export default function ContactPage() {
                       <button
                         className="vlt-btn vlt-btn--secondary vlt-btn--lg"
                         type="submit"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || !recaptchaSiteKey}
                       >
                         {isSubmitting ? 'Sending...' : 'Submit'}
                       </button>
@@ -297,8 +419,10 @@ export default function ContactPage() {
                         <motion.div
                           className="vlt-animated-block"
                           initial="hidden"
-                          animate={animatedElements.office ? "visible" : "hidden"}
-                          onViewportEnter={() => setAnimatedElements(prev => ({ ...prev, office: true }))}
+                          animate={animatedElements.office ? 'visible' : 'hidden'}
+                          onViewportEnter={() =>
+                            setAnimatedElements((prev) => ({ ...prev, office: true }))
+                          }
                           viewport={{ once: true, amount: 0.3 }}
                           variants={fadeVariants}
                         >
@@ -316,8 +440,15 @@ export default function ContactPage() {
                         <motion.div
                           className="vlt-animated-block"
                           initial="hidden"
-                          animate={animatedElements.headquarters ? "visible" : "hidden"}
-                          onViewportEnter={() => setAnimatedElements(prev => ({ ...prev, headquarters: true }))}
+                          animate={
+                            animatedElements.headquarters ? 'visible' : 'hidden'
+                          }
+                          onViewportEnter={() =>
+                            setAnimatedElements((prev) => ({
+                              ...prev,
+                              headquarters: true,
+                            }))
+                          }
                           viewport={{ once: true, amount: 0.3 }}
                           variants={fadeVariants}
                         >
@@ -332,8 +463,10 @@ export default function ContactPage() {
                         <motion.div
                           className="vlt-animated-block"
                           initial="hidden"
-                          animate={animatedElements.social ? "visible" : "hidden"}
-                          onViewportEnter={() => setAnimatedElements(prev => ({ ...prev, social: true }))}
+                          animate={animatedElements.social ? 'visible' : 'hidden'}
+                          onViewportEnter={() =>
+                            setAnimatedElements((prev) => ({ ...prev, social: true }))
+                          }
                           viewport={{ once: true, amount: 0.3 }}
                           variants={fadeVariants}
                         >
@@ -402,11 +535,13 @@ export default function ContactPage() {
                 }}
                 loading="lazy"
               />
-              <motion.div 
+              <motion.div
                 className="vlt-animated-block"
                 initial="hidden"
-                animate={animatedElements.map ? "visible" : "hidden"}
-                onViewportEnter={() => setAnimatedElements(prev => ({ ...prev, map: true }))}
+                animate={animatedElements.map ? 'visible' : 'hidden'}
+                onViewportEnter={() =>
+                  setAnimatedElements((prev) => ({ ...prev, map: true }))
+                }
                 viewport={{ once: true, amount: 0.3 }}
                 variants={fadeVariants}
               >

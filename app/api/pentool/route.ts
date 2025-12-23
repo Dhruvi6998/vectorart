@@ -1,4 +1,4 @@
-// app/api/reviews/route.ts
+// app/api/pentool/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
@@ -6,28 +6,41 @@ import nodemailer from 'nodemailer';
 // In production, you should use a database
 let reviews: Array<{ name: string; message: string }> = [];
 
-// GET - Fetch all reviews
-export async function GET() {
-  console.log('📖 Fetching reviews');
+// Function to verify reCAPTCHA token
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
   
+  if (!secretKey) {
+    console.error('❌ reCAPTCHA secret key not configured');
+    return false;
+  }
+
   try {
-    return NextResponse.json(reviews);
-  } catch (error: any) {
-    console.error('❌ Error fetching reviews:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch reviews' },
-      { status: 500 }
-    );
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `secret=${secretKey}&response=${token}`,
+    });
+
+    const data = await response.json();
+    console.log('🔐 reCAPTCHA verification result:', data.success);
+    
+    return data.success;
+  } catch (error) {
+    console.error('❌ Error verifying reCAPTCHA:', error);
+    return false;
   }
 }
 
-// POST - Submit a new review
+// POST - Submit a new review with reCAPTCHA validation
 export async function POST(request: NextRequest) {
   console.log('📨 Received review submission');
   
   try {
     const body = await request.json();
-    const { name, email, message} = body;
+    const { name, email, message, recaptchaToken } = body;
 
     console.log('📋 Review data received:', { name, email });
 
@@ -38,6 +51,26 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Validate reCAPTCHA token
+    if (!recaptchaToken) {
+      return NextResponse.json(
+        { success: false, error: 'Please complete the reCAPTCHA verification' },
+        { status: 400 }
+      );
+    }
+
+    console.log('🔐 Verifying reCAPTCHA...');
+    const isValidRecaptcha = await verifyRecaptcha(recaptchaToken);
+
+    if (!isValidRecaptcha) {
+      return NextResponse.json(
+        { success: false, error: 'reCAPTCHA verification failed. Please try again.' },
+        { status: 400 }
+      );
+    }
+
+    console.log('✅ reCAPTCHA verified successfully');
 
     // Create transporter with environment variables
     const transporter = nodemailer.createTransport({
@@ -120,12 +153,21 @@ export async function POST(request: NextRequest) {
               color: #b3e5fc;
               font-size: 24px;
             }
+            .verified-badge {
+              display: inline-block;
+              background-color: #4caf50;
+              color: white;
+              padding: 5px 10px;
+              border-radius: 3px;
+              font-size: 12px;
+              margin-left: 10px;
+            }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-              <h2>🎨 PenTool 2025 - New Feedback Received</h2>
+              <h2>🎨 PenTool 2025 - New Feedback Received <span class="verified-badge">✓ Verified</span></h2>
             </div>
             <div class="content">
               <p style="text-align: right; color: #666; margin-bottom: 20px;">
@@ -148,6 +190,10 @@ export async function POST(request: NextRequest) {
               <p style="margin-top: 30px; padding: 15px; background-color: #e8f5e9; border-radius: 5px;">
                 <strong>📌 Action Required:</strong> Please review and respond to this feedback at your earliest convenience.
               </p>
+              
+              <p style="margin-top: 15px; padding: 10px; background-color: #e3f2fd; border-radius: 5px; font-size: 12px;">
+                <strong>🔒 Security:</strong> This submission was verified with Google reCAPTCHA v2
+              </p>
             </div>
             <div class="footer">
               <p>&copy; 2025 Vector Art - PenTool. All Rights Reserved.</p>
@@ -164,7 +210,7 @@ export async function POST(request: NextRequest) {
       from: `"PenTool Feedback" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to: process.env.CONTACT_EMAIL || 'info@vectorart.co',
       replyTo: email,
-      subject: `New PenTool Feedback from ${name}`,
+      subject: `New PenTool Feedback from ${name} ✓ Verified`,
       html: emailBody
     });
 

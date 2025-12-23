@@ -2,6 +2,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
+// Function to verify reCAPTCHA token
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+  
+  if (!secretKey) {
+    console.error('❌ RECAPTCHA_SECRET_KEY not found in environment variables');
+    return false;
+  }
+
+  try {
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `secret=${secretKey}&response=${token}`,
+    });
+
+    const data = await response.json();
+    console.log('🔐 reCAPTCHA verification result:', data.success);
+    
+    return data.success;
+  } catch (error) {
+    console.error('❌ reCAPTCHA verification error:', error);
+    return false;
+  }
+}
+
 export async function POST(request: NextRequest) {
   console.log('📨 Received upload artwork request');
   
@@ -15,9 +43,37 @@ export async function POST(request: NextRequest) {
     const orderInformation = formData.get('orderInformation') as string;
     const agreeToNewsletter = formData.get('agree') as string;
     const file = formData.get('file') as File | null;
+    const recaptchaToken = formData.get('recaptchaToken') as string;
 
     console.log('📋 Form data received:', { name, companyName, email, phone });
     console.log('📎 File uploaded:', file ? file.name : 'No file');
+
+    // Verify reCAPTCHA
+    if (!recaptchaToken) {
+      console.log('❌ No reCAPTCHA token provided');
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'reCAPTCHA verification is required.' 
+        },
+        { status: 400 }
+      );
+    }
+
+    const isRecaptchaValid = await verifyRecaptcha(recaptchaToken);
+    
+    if (!isRecaptchaValid) {
+      console.log('❌ reCAPTCHA verification failed');
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'reCAPTCHA verification failed. Please try again.' 
+        },
+        { status: 400 }
+      );
+    }
+
+    console.log('✅ reCAPTCHA verification passed');
 
     // Create transporter with environment variables
     const transporter = nodemailer.createTransport({
@@ -183,6 +239,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-// Note: In App Router, we don't need the config export
-// Next.js 13+ handles this automatically

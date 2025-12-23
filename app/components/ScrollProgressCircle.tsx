@@ -66,13 +66,13 @@ export default function ScrollProgressCircle() {
         <circle cx="32" cy="32" r="22" fill="#e82e31" />
 
         {/* Arrow */}
-        <path
-          d="M32 20 V38 M24 32 L32 40 L40 32"
-          stroke="#fff"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
+<path
+  d="M32 38 V20 M24 28 L32 20 L40 28"
+  stroke="#fff"
+  strokeWidth="3"
+  strokeLinecap="round"
+  strokeLinejoin="round"
+/>
       </svg>
     </div>
   );

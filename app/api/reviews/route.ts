@@ -2,6 +2,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
+// Function to verify reCAPTCHA token
+async function verifyRecaptcha(token: string): Promise<boolean> {
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+  
+  if (!secretKey) {
+    console.error('❌ RECAPTCHA_SECRET_KEY not found in environment variables');
+    return false;
+  }
+
+  try {
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `secret=${secretKey}&response=${token}`,
+    });
+
+    const data = await response.json();
+    console.log('🔐 reCAPTCHA verification result:', data.success);
+    
+    return data.success;
+  } catch (error) {
+    console.error('❌ reCAPTCHA verification error:', error);
+    return false;
+  }
+}
+
 // Configure your email transporter
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -22,7 +50,7 @@ const transporter = nodemailer.createTransport({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, message, formType, agree } = body;
+    const { name, email, message, formType, agree, recaptchaToken } = body;
 
     // Validation
     if (!name || !email || !message || !formType) {
@@ -31,6 +59,33 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Verify reCAPTCHA
+    if (!recaptchaToken) {
+      console.log('❌ No reCAPTCHA token provided');
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'reCAPTCHA verification is required.' 
+        },
+        { status: 400 }
+      );
+    }
+
+    const isRecaptchaValid = await verifyRecaptcha(recaptchaToken);
+    
+    if (!isRecaptchaValid) {
+      console.log('❌ reCAPTCHA verification failed');
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'reCAPTCHA verification failed. Please try again.' 
+        },
+        { status: 400 }
+      );
+    }
+
+    console.log('✅ reCAPTCHA verification passed');
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -92,6 +147,7 @@ export async function POST(request: NextRequest) {
             <p>This email was sent from Vector Art website feedback form.</p>
             <p>Form Type: ${formType}</p>
             <p>Submitted at: ${new Date().toLocaleString()}</p>
+            <p style="color: #28a745;">✓ reCAPTCHA Verified</p>
           </div>
         </div>
       `,
@@ -108,6 +164,7 @@ export async function POST(request: NextRequest) {
         ---
         Form Type: ${formType}
         Submitted at: ${new Date().toLocaleString()}
+        ✓ reCAPTCHA Verified
       `,
     };
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import Script from 'next/script';
 import { motion } from 'framer-motion';
@@ -8,6 +8,14 @@ import { motion } from 'framer-motion';
 interface Review {
   name: string;
   message: string;
+}
+
+// Declare global grecaptcha type
+declare global {
+  interface Window {
+    grecaptcha: any;
+    onRecaptchaLoad: () => void;
+  }
 }
 
 export default function PenToolPage() {
@@ -18,11 +26,76 @@ export default function PenToolPage() {
   });
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+  const recaptchaRef = useRef<HTMLDivElement>(null);
+  const recaptchaWidgetId = useRef<number | null>(null);
 
-  // Fetch reviews on component mount
+  // Get reCAPTCHA site key from environment variable
+  const RECAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY;
+
   useEffect(() => {
     fetchReviews();
   }, []);
+
+  // Initialize reCAPTCHA callback function
+  const initializeRecaptcha = useCallback(() => {
+    if (window.grecaptcha && recaptchaRef.current && RECAPTCHA_SITE_KEY) {
+      try {
+        // Clear any existing widget
+        if (recaptchaWidgetId.current !== null) {
+          window.grecaptcha.reset(recaptchaWidgetId.current);
+        }
+        
+        // Render new widget
+        recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
+          sitekey: RECAPTCHA_SITE_KEY,
+          callback: (token: string) => {
+            console.log('reCAPTCHA token received:', token);
+            setRecaptchaToken(token);
+          },
+          'expired-callback': () => {
+            console.log('reCAPTCHA expired');
+            setRecaptchaToken(null);
+          },
+          'error-callback': () => {
+            console.log('reCAPTCHA error');
+            setRecaptchaToken(null);
+          },
+        });
+        setRecaptchaLoaded(true);
+        console.log('reCAPTCHA initialized successfully');
+      } catch (error) {
+        console.error('Error initializing reCAPTCHA:', error);
+      }
+    }
+  }, [RECAPTCHA_SITE_KEY]);
+
+  // Set global callback when component mounts
+  useEffect(() => {
+    window.onRecaptchaLoad = () => {
+      console.log('reCAPTCHA script loaded');
+      initializeRecaptcha();
+    };
+
+    // Also check if grecaptcha is already loaded (e.g., on hot reload)
+    if (window.grecaptcha) {
+      console.log('reCAPTCHA already available');
+      // Small delay to ensure DOM is ready
+      setTimeout(initializeRecaptcha, 100);
+    }
+
+    return () => {
+      // Cleanup
+      if (recaptchaWidgetId.current !== null && window.grecaptcha) {
+        try {
+          window.grecaptcha.reset(recaptchaWidgetId.current);
+        } catch (e) {
+          console.error('Error cleaning up reCAPTCHA:', e);
+        }
+      }
+    };
+  }, [initializeRecaptcha]);
 
   const fetchReviews = async () => {
     try {
@@ -48,6 +121,27 @@ export default function PenToolPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!RECAPTCHA_SITE_KEY) {
+      (window as any).Swal.fire({
+        title: 'Configuration Error',
+        text: 'reCAPTCHA is not properly configured. Please contact support.',
+        icon: 'error',
+        confirmButtonColor: '#23265d',
+      });
+      return;
+    }
+
+    if (!recaptchaToken) {
+      (window as any).Swal.fire({
+        title: 'Verification Required',
+        text: 'Please complete the reCAPTCHA verification',
+        icon: 'warning',
+        confirmButtonColor: '#23265d',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -56,13 +150,15 @@ export default function PenToolPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          recaptchaToken,
+        }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        // Show success message using SweetAlert2
         (window as any).Swal.fire({
           title: 'Message Sent!',
           text: 'We got your feedback',
@@ -70,15 +166,18 @@ export default function PenToolPage() {
           confirmButtonColor: '#23265d',
         });
 
-        // Add new review to the list
         if (data.review) {
           setReviews((prev) => [...prev, data.review]);
         }
         
-        // Reset form
         setFormData({ name: '', email: '', message: '' });
+        
+        // Reset reCAPTCHA
+        if (window.grecaptcha && recaptchaWidgetId.current !== null) {
+          window.grecaptcha.reset(recaptchaWidgetId.current);
+          setRecaptchaToken(null);
+        }
       } else {
-        // Show error message using SweetAlert2
         (window as any).Swal.fire({
           title: 'Error!',
           text: data.error || 'Failed to submit feedback. Please try again.',
@@ -88,7 +187,6 @@ export default function PenToolPage() {
       }
     } catch (error) {
       console.error('Error submitting review:', error);
-      // Show error message using SweetAlert2
       (window as any).Swal.fire({
         title: 'Error!',
         text: 'Failed to submit feedback. Please try again.',
@@ -100,7 +198,6 @@ export default function PenToolPage() {
     }
   };
 
-  // Framer Motion variants
   const fadeInVariants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 }
@@ -121,7 +218,6 @@ export default function PenToolPage() {
     }
   };
 
-  // Social share handlers
   const shareUrl = 'https://vectorart.co/PenTool2025';
   const shareTitle = 'Vectorart.co: PenTool - 2025';
   const shareMsg = 'Vector Art - PenTool 2025';
@@ -140,34 +236,46 @@ export default function PenToolPage() {
       <Head>
         <title>Vectorart.co: PenTool - 2025</title>
         <meta name="keywords" content="PPAI, PPAI 2025, Vector art, Graphic design" />
-        <meta
-          name="description"
-          content="Vectorart.co: PenTool - 2025 | High-Quality Vector Art for Creative Projects"
-        />
-        
-        {/* Open Graph Meta Tags */}
+        <meta name="description" content="Vectorart.co: PenTool - 2025 | High-Quality Vector Art for Creative Projects" />
         <meta property="og:title" content="Vectorart.co: PenTool - 2025" />
-        <meta
-          property="og:description"
-          content="Vectorart.co: PenTool - 2025 | High-Quality Vector Art for Creative Projects"
-        />
+        <meta property="og:description" content="Vectorart.co: PenTool - 2025 | High-Quality Vector Art for Creative Projects" />
         <meta property="og:image" content="/assets/img/pages/News/ASI2025.png" />
         <meta property="og:url" content="https://vectorart.co/PenTool2025/" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="VectorArt" />
       </Head>
 
-      {/* SweetAlert2 CDN */}
       <Script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" strategy="beforeInteractive" />
+      
+      {/* Inline script to set callback before loading reCAPTCHA */}
+      <Script id="recaptcha-callback" strategy="beforeInteractive">
+        {`
+          window.onRecaptchaLoad = function() {
+            console.log('reCAPTCHA ready to initialize');
+            if (window.grecaptcha && window.grecaptcha.render) {
+              // The initialization will happen in useEffect
+              if (typeof window.onRecaptchaCallback === 'function') {
+                window.onRecaptchaCallback();
+              }
+            }
+          };
+        `}
+      </Script>
+      
+      {/* Load reCAPTCHA */}
+      <Script 
+        src="https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit"
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log('reCAPTCHA script loaded via Script component');
+        }}
+        onError={() => console.error('Failed to load reCAPTCHA script')}
+      />
 
-      {/* Site overlay */}
       <div className="vlt-site-overlay"></div>
 
-      {/* Main */}
       <main className="vlt-main">
-        {/* Page content */}
         <div className="vlt-page-content">
-          {/* Page title section */}
           <motion.section
             initial="hidden"
             whileInView="visible"
@@ -189,7 +297,7 @@ export default function PenToolPage() {
                       variants={slideUpVariants}
                       transition={{ duration: 1, delay: 0.2 }}
                       className="vlt-page-title__title" 
-                      style={{ color: 'white' , fontSize: "4rem" , fontWeight:"700" }}
+                      style={{ color: 'white', fontSize: "4rem", fontWeight: "700" }}
                     >
                       PenTool - 2025
                     </motion.h1>
@@ -203,7 +311,6 @@ export default function PenToolPage() {
 
           <div className="vlt-gap-80"></div>
 
-          {/* New content section */}
           <motion.div 
             initial="hidden"
             whileInView="visible"
@@ -286,26 +393,9 @@ export default function PenToolPage() {
               margin: 'auto',
             }}
           >
-            <motion.img
-              variants={slideUpVariants}
-              src="/assets/img/pages/PenToolImages/2.jpg"
-              alt="Image 1"
-              style={{ width: '100%', height: '397px', borderRadius: '5px' }}
-            />
-            <motion.img
-              variants={slideUpVariants}
-              transition={{ delay: 0.1 }}
-              src="/assets/img/pages/PenToolImages/1.jpg"
-              alt="Image 4"
-              style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-            />
-            <motion.img
-              variants={slideUpVariants}
-              transition={{ delay: 0.2 }}
-              src="/assets/img/pages/PenToolImages/4.jpg"
-              alt="Image 2"
-              style={{ width: '100%', height: '397px', borderRadius: '5px' }}
-            />
+            <motion.img variants={slideUpVariants} src="/assets/img/pages/PenToolImages/2.jpg" alt="Image 1" style={{ width: '100%', height: '397px', borderRadius: '5px' }} />
+            <motion.img variants={slideUpVariants} transition={{ delay: 0.1 }} src="/assets/img/pages/PenToolImages/1.jpg" alt="Image 4" style={{ width: '100%', height: 'auto', borderRadius: '5px' }} />
+            <motion.img variants={slideUpVariants} transition={{ delay: 0.2 }} src="/assets/img/pages/PenToolImages/4.jpg" alt="Image 2" style={{ width: '100%', height: '397px', borderRadius: '5px' }} />
           </motion.div>
 
           <motion.div 
@@ -347,31 +437,14 @@ export default function PenToolPage() {
                   margin: 'auto',
                 }}
               >
-                <motion.video 
-                  variants={slideUpVariants}
-                  controls 
-                  style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                >
+                <motion.video variants={slideUpVariants} controls style={{ width: '100%', height: 'auto', borderRadius: '5px' }}>
                   <source src="/assets/img/pages/PenToolImages/8.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
                 </motion.video>
-                <motion.video 
-                  variants={slideUpVariants}
-                  transition={{ delay: 0.1 }}
-                  controls 
-                  style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                >
+                <motion.video variants={slideUpVariants} transition={{ delay: 0.1 }} controls style={{ width: '100%', height: 'auto', borderRadius: '5px' }}>
                   <source src="/assets/img/pages/PenToolImages/9.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
                 </motion.video>
-                <motion.video 
-                  variants={slideUpVariants}
-                  transition={{ delay: 0.2 }}
-                  controls 
-                  style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                >
+                <motion.video variants={slideUpVariants} transition={{ delay: 0.2 }} controls style={{ width: '100%', height: 'auto', borderRadius: '5px' }}>
                   <source src="/assets/img/pages/PenToolImages/10.mp4" type="video/mp4" />
-                  Your browser does not support the video tag.
                 </motion.video>
               </motion.div>
 
@@ -414,26 +487,9 @@ export default function PenToolPage() {
                   margin: 'auto',
                 }}
               >
-                <motion.img
-                  variants={slideUpVariants}
-                  src="/assets/img/pages/PenToolImages/5.jpg"
-                  alt="Image 1"
-                  style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                />
-                <motion.img
-                  variants={slideUpVariants}
-                  transition={{ delay: 0.1 }}
-                  src="/assets/img/pages/PenToolImages/6.jpg"
-                  alt="Image 4"
-                  style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                />
-                <motion.img
-                  variants={slideUpVariants}
-                  transition={{ delay: 0.2 }}
-                  src="/assets/img/pages/PenToolImages/1.jpg"
-                  alt="Image 2"
-                  style={{ width: '100%', height: '466px', borderRadius: '5px' }}
-                />
+                <motion.img variants={slideUpVariants} src="/assets/img/pages/PenToolImages/5.jpg" alt="Image 1" style={{ width: '100%', height: 'auto', borderRadius: '5px' }} />
+                <motion.img variants={slideUpVariants} transition={{ delay: 0.1 }} src="/assets/img/pages/PenToolImages/6.jpg" alt="Image 4" style={{ width: '100%', height: 'auto', borderRadius: '5px' }} />
+                <motion.img variants={slideUpVariants} transition={{ delay: 0.2 }} src="/assets/img/pages/PenToolImages/1.jpg" alt="Image 2" style={{ width: '100%', height: '466px', borderRadius: '5px' }} />
               </motion.div>
 
               <motion.div 
@@ -477,26 +533,9 @@ export default function PenToolPage() {
                       margin: 'auto',
                     }}
                   >
-                    <motion.img
-                      variants={slideUpVariants}
-                      src="/assets/img/pages/PenToolImages/18.jpg"
-                      alt="Image 1"
-                      style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                    />
-                    <motion.img
-                      variants={slideUpVariants}
-                      transition={{ delay: 0.1 }}
-                      src="/assets/img/pages/PenToolImages/19.jpg"
-                      alt="Image 4"
-                      style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                    />
-                    <motion.img
-                      variants={slideUpVariants}
-                      transition={{ delay: 0.2 }}
-                      src="/assets/img/pages/PenToolImages/20.jpeg"
-                      alt="Image 2"
-                      style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                    />
+                    <motion.img variants={slideUpVariants} src="/assets/img/pages/PenToolImages/18.jpg" alt="Image 1" style={{ width: '100%', height: 'auto', borderRadius: '5px' }} />
+                    <motion.img variants={slideUpVariants} transition={{ delay: 0.1 }} src="/assets/img/pages/PenToolImages/19.jpg" alt="Image 4" style={{ width: '100%', height: 'auto', borderRadius: '5px' }} />
+                    <motion.img variants={slideUpVariants} transition={{ delay: 0.2 }} src="/assets/img/pages/PenToolImages/20.jpeg" alt="Image 2" style={{ width: '100%', height: 'auto', borderRadius: '5px' }} />
                   </motion.div>
 
                   <motion.div 
@@ -536,31 +575,14 @@ export default function PenToolPage() {
                       margin: 'auto',
                     }}
                   >
-                    <motion.video 
-                      variants={slideUpVariants}
-                      controls 
-                      style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                    >
+                    <motion.video variants={slideUpVariants} controls style={{ width: '100%', height: 'auto', borderRadius: '5px' }}>
                       <source src="/assets/img/pages/PenToolImages/15.mp4" type="video/mp4" />
-                      Your browser does not support the video tag.
                     </motion.video>
-                    <motion.video 
-                      variants={slideUpVariants}
-                      transition={{ delay: 0.1 }}
-                      controls 
-                      style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                    >
+                    <motion.video variants={slideUpVariants} transition={{ delay: 0.1 }} controls style={{ width: '100%', height: 'auto', borderRadius: '5px' }}>
                       <source src="/assets/img/pages/PenToolImages/16.mp4" type="video/mp4" />
-                      Your browser does not support the video tag.
                     </motion.video>
-                    <motion.video 
-                      variants={slideUpVariants}
-                      transition={{ delay: 0.2 }}
-                      controls 
-                      style={{ width: '100%', height: 'auto', borderRadius: '5px' }}
-                    >
+                    <motion.video variants={slideUpVariants} transition={{ delay: 0.2 }} controls style={{ width: '100%', height: 'auto', borderRadius: '5px' }}>
                       <source src="/assets/img/pages/PenToolImages/17.mp4" type="video/mp4" />
-                      Your browser does not support the video tag.
                     </motion.video>
                   </motion.div>
 
@@ -608,21 +630,13 @@ export default function PenToolPage() {
                   >
                     You can always connect with us here on{' '}
                     <span style={{ color: 'black', fontWeight: 'bold' }}>
-                      <a
-                        href="https://vectorart.co/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                      <a href="https://vectorart.co/" target="_blank" rel="noopener noreferrer">
                         Linkedin
                       </a>
                     </span>{' '}
                     or visit our website{' '}
                     <span style={{ color: 'black', fontWeight: 'bold' }}>
-                      <a
-                        href="https://vectorart.co/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
+                      <a href="https://vectorart.co/" target="_blank" rel="noopener noreferrer">
                         Vectorart.co
                       </a>
                     </span>{' '}
@@ -712,10 +726,32 @@ export default function PenToolPage() {
                         </label>
                       </div>
 
+                      {/* reCAPTCHA Widget */}
+                      <div style={{ marginBottom: '20px', minHeight: '78px' }}>
+                        <div 
+                          ref={recaptchaRef}
+                          id="g-recaptcha"
+                          data-sitekey={RECAPTCHA_SITE_KEY}
+                          style={{ display: 'inline-block' }}
+                        ></div>
+                        
+                        {!RECAPTCHA_SITE_KEY && (
+                          <div className="alert alert-warning" style={{ marginTop: '10px' }}>
+                            reCAPTCHA is not configured. Please set <code>NEXT_PUBLIC_RECAPTCHA_SITE_KEY</code> in your environment variables.
+                          </div>
+                        )}
+                        
+                        {RECAPTCHA_SITE_KEY && !recaptchaLoaded && (
+                          <div style={{ marginTop: '10px', color: '#666', fontSize: '14px' }}>
+                            Loading reCAPTCHA...
+                          </div>
+                        )}
+                      </div>
+
                       <button
                         className="vlt-btn vlt-btn--secondary vlt-btn--lg"
                         type="submit"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || !RECAPTCHA_SITE_KEY}
                       >
                         {isSubmitting ? 'Submitting...' : 'Submit'}
                       </button>
