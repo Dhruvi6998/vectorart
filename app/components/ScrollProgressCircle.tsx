@@ -33,8 +33,13 @@ export default function ScrollProgressCircle() {
   const radius = 28;
   const circumference = 2 * Math.PI * radius;
 
+  /* ✅ Scroll to top function */
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <div style={containerStyle}>
+    <div style={containerStyle} onClick={scrollToTop}>
       <svg width="64" height="64" viewBox="0 0 64 64">
         {/* Background Circle */}
         <circle
@@ -66,13 +71,13 @@ export default function ScrollProgressCircle() {
         <circle cx="32" cy="32" r="22" fill="#e82e31" />
 
         {/* Arrow */}
-<path
-  d="M32 38 V20 M24 28 L32 20 L40 28"
-  stroke="#fff"
-  strokeWidth="3"
-  strokeLinecap="round"
-  strokeLinejoin="round"
-/>
+        <path
+          d="M32 38 V20 M24 28 L32 20 L40 28"
+          stroke="#fff"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     </div>
   );
