@@ -1,7 +1,7 @@
 // app/upload-artwork/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Swal from 'sweetalert2';
 import { motion, Variants } from 'framer-motion';
 import Script from 'next/script';
@@ -10,6 +10,7 @@ import Script from 'next/script';
 declare global {
   interface Window {
     grecaptcha: any;
+    onRecaptchaLoad: () => void;
   }
 }
 
@@ -39,9 +40,71 @@ export default function UploadArtwork() {
   const [file, setFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
+  const recaptchaRef = useRef<HTMLDivElement>(null);
+  const recaptchaWidgetId = useRef<number | null>(null);
 
   // Get reCAPTCHA site key from environment variable
-  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY_ARTWORK;
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY; // Changed from SECRET_KEY to SITE_KEY
+
+  // Initialize reCAPTCHA
+  const initializeRecaptcha = useCallback(() => {
+    if (window.grecaptcha && recaptchaRef.current && recaptchaSiteKey) {
+      try {
+        // Clear any existing widget
+        if (recaptchaWidgetId.current !== null) {
+          window.grecaptcha.reset(recaptchaWidgetId.current);
+        }
+        
+        // Render new widget
+        recaptchaWidgetId.current = window.grecaptcha.render(recaptchaRef.current, {
+          sitekey: recaptchaSiteKey,
+          callback: (token: string) => {
+            console.log('reCAPTCHA token received:', token);
+            setRecaptchaToken(token);
+          },
+          'expired-callback': () => {
+            console.log('reCAPTCHA expired');
+            setRecaptchaToken(null);
+          },
+          'error-callback': () => {
+            console.log('reCAPTCHA error');
+            setRecaptchaToken(null);
+          },
+        });
+        setRecaptchaLoaded(true);
+        console.log('reCAPTCHA initialized successfully');
+      } catch (error) {
+        console.error('Error initializing reCAPTCHA:', error);
+      }
+    }
+  }, [recaptchaSiteKey]);
+
+  // Set global callback when component mounts
+  useEffect(() => {
+    window.onRecaptchaLoad = () => {
+      console.log('reCAPTCHA script loaded');
+      initializeRecaptcha();
+    };
+
+    // Also check if grecaptcha is already loaded (e.g., on hot reload)
+    if (window.grecaptcha) {
+      console.log('reCAPTCHA already available');
+      // Small delay to ensure DOM is ready
+      setTimeout(initializeRecaptcha, 100);
+    }
+
+    return () => {
+      // Cleanup
+      if (recaptchaWidgetId.current !== null && window.grecaptcha) {
+        try {
+          window.grecaptcha.reset(recaptchaWidgetId.current);
+        } catch (e) {
+          console.error('Error cleaning up reCAPTCHA:', e);
+        }
+      }
+    };
+  }, [initializeRecaptcha]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -70,10 +133,7 @@ export default function UploadArtwork() {
       return;
     }
 
-    // Get reCAPTCHA token
-    const recaptchaResponse = window.grecaptcha.getResponse();
-    
-    if (!recaptchaResponse) {
+    if (!recaptchaToken) {
       await Swal.fire({
         title: 'Verification Required',
         text: 'Please complete the reCAPTCHA verification.',
@@ -90,7 +150,7 @@ export default function UploadArtwork() {
         formDataToSend.append(key, value.toString());
       });
       if (file) formDataToSend.append('file', file);
-      formDataToSend.append('recaptchaToken', recaptchaResponse);
+      formDataToSend.append('recaptchaToken', recaptchaToken);
 
       const response = await fetch('/api/uploadartwork', { 
         method: 'POST', 
@@ -113,15 +173,24 @@ export default function UploadArtwork() {
           agree: false 
         });
         setFile(null);
+        setRecaptchaToken(null);
         (e.target as HTMLFormElement).reset();
-        window.grecaptcha.reset();
+        
+        // Reset reCAPTCHA
+        if (window.grecaptcha && recaptchaWidgetId.current !== null) {
+          window.grecaptcha.reset(recaptchaWidgetId.current);
+        }
       } else {
         await Swal.fire({ 
           title: 'Error!', 
           text: result.error || 'Something went wrong.', 
           icon: 'error' 
         });
-        window.grecaptcha.reset();
+        // Reset reCAPTCHA
+        if (window.grecaptcha && recaptchaWidgetId.current !== null) {
+          window.grecaptcha.reset(recaptchaWidgetId.current);
+          setRecaptchaToken(null);
+        }
       }
     } catch (error) {
       await Swal.fire({ 
@@ -129,7 +198,11 @@ export default function UploadArtwork() {
         text: 'Failed to send message.', 
         icon: 'error' 
       });
-      window.grecaptcha.reset();
+      // Reset reCAPTCHA
+      if (window.grecaptcha && recaptchaWidgetId.current !== null) {
+        window.grecaptcha.reset(recaptchaWidgetId.current);
+        setRecaptchaToken(null);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -137,11 +210,32 @@ export default function UploadArtwork() {
 
   return (
     <>
-      {/* Load reCAPTCHA script */}
-      <Script
-        src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`}
-        onLoad={() => setRecaptchaLoaded(true)}
-        strategy="lazyOnload"
+      {/* Load SweetAlert2 */}
+      <Script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" strategy="beforeInteractive" />
+      
+      {/* Inline script to set callback before loading reCAPTCHA */}
+      <Script id="recaptcha-callback" strategy="beforeInteractive">
+        {`
+          window.onRecaptchaLoad = function() {
+            console.log('reCAPTCHA ready to initialize');
+            if (window.grecaptcha && window.grecaptcha.render) {
+              // The initialization will happen in useEffect
+              if (typeof window.onRecaptchaCallback === 'function') {
+                window.onRecaptchaCallback();
+              }
+            }
+          };
+        `}
+      </Script>
+      
+      {/* Load reCAPTCHA - Use explicit render */}
+      <Script 
+        src={`https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoad&render=explicit`}
+        strategy="afterInteractive"
+        onLoad={() => {
+          console.log('reCAPTCHA script loaded via Script component');
+        }}
+        onError={() => console.error('Failed to load reCAPTCHA script')}
       />
 
       <div className="vlt-site-overlay"></div>
@@ -298,16 +392,23 @@ export default function UploadArtwork() {
                         </label>
                       </div>
 
-                      {/* reCAPTCHA */}
-                      <div className="vlt-form-group" style={{ marginBottom: '20px' }}>
-                        {recaptchaSiteKey ? (
-                          <div 
-                            className="g-recaptcha" 
-                            data-sitekey={recaptchaSiteKey}
-                          ></div>
-                        ) : (
-                          <div className="alert alert-warning">
+                      {/* reCAPTCHA Widget */}
+                      <div className="vlt-form-group" style={{ marginBottom: '20px', minHeight: '78px' }}>
+                        <div 
+                          ref={recaptchaRef}
+                          id="g-recaptcha"
+                          style={{ display: 'inline-block' }}
+                        ></div>
+                        
+                        {!recaptchaSiteKey && (
+                          <div className="alert alert-warning" style={{ marginTop: '10px' }}>
                             reCAPTCHA is not configured. Please set <code>NEXT_PUBLIC_RECAPTCHA_SITE_KEY</code> in your environment variables.
+                          </div>
+                        )}
+                        
+                        {recaptchaSiteKey && !recaptchaLoaded && (
+                          <div style={{ marginTop: '10px', color: '#666', fontSize: '14px' }}>
+                            Loading reCAPTCHA...
                           </div>
                         )}
                       </div>

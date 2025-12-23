@@ -14,7 +14,7 @@ interface Review {
 declare global {
   interface Window {
     grecaptcha: any;
-    onRecaptchaLoad: () => void;
+    onRecaptchaLoadCallback?: () => void;
   }
 }
 
