@@ -11,10 +11,12 @@ import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { motion } from 'framer-motion';
-
+import { Swiper as SwiperClass } from 'swiper';
+import { Swiper as SwiperComponent } from 'swiper/react';
+import { SwiperRef } from 'swiper/react';
 const HomePage: React.FC = () => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const portfolioSwiperRef = useRef(null);
+  const portfolioSwiperRef = useRef<SwiperRef>(null);
   const loadedImagesCount = useRef(0);
 
 
