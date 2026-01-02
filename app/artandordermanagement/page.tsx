@@ -123,7 +123,7 @@ export default function ArtOrderManagement() {
             <div className="vlt-gap-150"></div>
           </section>
 
-          {/* <div className="vlt-gap-80"></div> */}
+          <div className="vlt-gap-80"></div>
 
         {/* INTRO */}
         <AOSMotion>

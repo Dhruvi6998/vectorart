@@ -155,7 +155,15 @@ const Navbar = () => {
             fontFamily: "'Rajdhani', sans-serif"
           }}>
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-              <Link href="/" style={mobileNavLinkStyle}>Home</Link>
+              <Link
+                href="/"
+                style={mobileNavLinkStyle}
+                onClick={() => {
+                  window.location.href = '/'; // forces full reload
+                }}
+              >
+                Home
+              </Link>
               <Link href="/exampleandplans" style={mobileNavLinkStyle}>Example & Plans</Link>
               <Link href="/portfolio" style={mobileNavLinkStyle}>Portfolio</Link>
 
@@ -243,6 +251,9 @@ const Navbar = () => {
                 <Image
                   src="/assets/img/Heading-Logo.png"
                   alt="Vector Art Logo"
+                  onClick={() => {
+                  window.location.href = '/'; // forces full reload
+                }}
                   width={260}
                   height={70}
                   style={{ width: '260px', height: 'auto' }}
@@ -252,14 +263,20 @@ const Navbar = () => {
 
             {/* Desktop Navigation */}
             <nav style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
-              <Link href="/" style={{
-                ...navButtonStyle,
-                backgroundColor: 'transparent',
-
-
-              }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#555'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+              <Link
+                href="/"
+                style={{
+                  ...navButtonStyle,
+                  backgroundColor: 'transparent',
+                }}
+                onClick={() => {
+                  window.location.href = '/'; // forces full reload
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#555')}
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = 'transparent')
+                }
+              >
                 Home
               </Link>
 
@@ -327,7 +344,7 @@ const Navbar = () => {
 
               {/* Solutions Dropdown */}
               <div style={{ position: 'relative' }} >
-{/* 
+                {/* 
                 // onMouseEnter={() => setOpenSubmenu('solutions')}
                 // onMouseLeave={() => setOpenSubmenu(null)}> */}
                 <button

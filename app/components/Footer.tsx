@@ -272,13 +272,76 @@ const Footer: React.FC = () => {
               <div className="vlt-widget vlt-widget--text vlt-widget--white">
                 <h5 className="text-light">Company</h5>
                 <ul>
-                  <li><Link href="/aboutus" style={{color: "white"}}>About Us</Link></li>
-                  <li><Link href="/contact" style={{color: "white"}}>Contact Us</Link></li>
-                  <li><Link href="/privacypolicy" style={{color: "white"}}>Privacy Policy</Link></li>
-                  <li><Link href="/termsandconditions" style={{color: "white"}}>Terms & Conditions</Link></li>
-                  <li><Link href="/legaldisclaimer" style={{color: "white"}}>Legal Disclaimer</Link></li>
-                  <li><Link href="/payonline" style={{color: "white"}}>Pay Online</Link></li>
-                  <li><Link href="/pentool" style={{color: "white"}}>Pentool</Link></li>
+                <li>
+    <Link
+      href="/aboutus"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      About Us
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/contact"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Contact Us
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/privacypolicy"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Privacy Policy
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/termsandconditions"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Terms & Conditions
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/legaldisclaimer"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Legal Disclaimer
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/payonline"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Pay Online
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/pentool"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Pentool
+    </Link>
+  </li>
                 </ul>
                 <div className="vlt-gap-30--sm"></div>
               </div>
@@ -289,13 +352,76 @@ const Footer: React.FC = () => {
               <div className="vlt-widget vlt-widget--text vlt-widget--white">
                 <h5 className="text-light">Services</h5>
                 <ul>
-                  <li><Link href="/graphicdesign" style={{color: "white"}}>Graphic Design</Link></li>
-                  <li><Link href="/digitizing" style={{color: "white"}}>Digitizing</Link></li>
-                  <li><Link href="/imageediting" style={{color: "white"}}>Image Editing</Link></li>
-                  <li><Link href="/technology" style={{color: "white"}}>Technology</Link></li>
-                  <li><Link href="/artandordermanagement" style={{color: "white"}}>Art & Order Management</Link></li>
-                  <li><Link href="/designanddataservices" style={{color: "white"}}>Design & Data Services</Link></li>
-                  <li><Link href="/digitalmarketing" style={{color: "white"}}>Digital Marketing</Link></li>
+                 <li>
+    <Link
+      href="/graphicdesign"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Graphic Design
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/digitizing"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Digitizing
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/imageediting"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Image Editing
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/technology"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Technology
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/artandordermanagement"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Art & Order Management
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/designanddataservices"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Design & Data Services
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/digitalmarketing"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Digital Marketing
+    </Link>
+  </li>
                 </ul>
                 <div className="vlt-gap-30--sm"></div>
               </div>
@@ -307,35 +433,65 @@ const Footer: React.FC = () => {
                 <h5 className="text-light">Solutions</h5>
                 <ul>
                   <li>
-                    <Link href="/promovirtuals" style={{ color: "white" }}>
-                      Virtual Sampling – Promo Virtuals
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/technologysolutions" style={{ color: "white" }}>
-                      Technology Solutions
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/erpandordermanagement" style={{ color: "white" }}>
-                      ERP & Order Management
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/offshoredevelopmentcenter" style={{ color: "white" }}>
-                      Offshore Development Center
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/consulting" style={{ color: "white" }}>
-                      Consulting
-                    </Link>
-                  </li>
-                  <li>
-                    <Link href="/maintainanceandupgrades" style={{ color: "white" }}>
-                      Maintenance & Upgrades
-                    </Link>
-                  </li>
+    <Link
+      href="/promovirtuals"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Virtual Sampling – Promo Virtuals
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/technologysolutions"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Technology Solutions
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/erpandordermanagement"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      ERP & Order Management
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/offshoredevelopmentcenter"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Offshore Development Center
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/consulting"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Consulting
+    </Link>
+  </li>
+  <li>
+    <Link
+      href="/maintainanceandupgrades"
+      style={{ color: "white", transition: "color 0.3s" }}
+      onMouseEnter={e => (e.currentTarget.style.color = "#e82e31")}
+      onMouseLeave={e => (e.currentTarget.style.color = "white")}
+    >
+      Maintenance & Upgrades
+    </Link>
+  </li>
                   <li>
                     <Link
                       href="/news"

@@ -1,97 +1,37 @@
 'use client';
-import React, { useEffect } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Swiper, SwiperSlide } from 'swiper/react';
+
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Variants, easeInOut } from "framer-motion";
+import "swiper/css/autoplay";
+import { easeInOut } from "framer-motion";
+import React, { useRef, useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { motion } from 'framer-motion';
 
 const HomePage: React.FC = () => {
-  useEffect(() => {
-    const initSwipers = async () => {
-      // Import Swiper modules
-      const Swiper = (await import("swiper")).default;
-      const { Navigation, Pagination, Autoplay } = await import("swiper/modules");
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const portfolioSwiperRef = useRef(null);
+  const loadedImagesCount = useRef(0);
 
-      // Wait a moment for components to mount
-      setTimeout(() => {
-        // Testimonials Slider
-        new Swiper(".vlt-content-slider .swiper-container", {
-          modules: [Navigation, Pagination, Autoplay],
-          spaceBetween: 100,
-          loop: true,
-          autoplay: {
-            delay: 3000,
-            disableOnInteraction: false,
-          },
-          navigation: {
-            nextEl: ".vlt-testimonials-slider-anchor .vlt-swiper-button-next",
-            prevEl: ".vlt-testimonials-slider-anchor .vlt-swiper-button-prev",
-          },
-          pagination: {
-            el: ".vlt-testimonials-slider-anchor .vlt-swiper-pagination",
-            clickable: true,
-          },
-        });
 
-        // Portfolio Slider
-        const portfolioSwiper = new Swiper(".vlt-work-carousel-masonry .swiper-container", {
-          modules: [Navigation, Autoplay],
-          loop: true,
-          speed: 1000,
-          spaceBetween: 30,
-          grabCursor: true,
-          centeredSlides: false,
-          slidesPerView: 3,
-          watchOverflow: true,
-          observer: true,
-          observeParents: true,
-          autoplay: {
-            delay: 1500,
-            disableOnInteraction: false,
-          },
-          navigation: {
-            nextEl: ".vlt-work-carousel-masonry .vlt-swiper-button-next",
-            prevEl: ".vlt-work-carousel-masonry .vlt-swiper-button-prev",
-          },
-          breakpoints: {
-            320: { slidesPerView: 1 },
-            768: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 },
-          },
-          on: {
-            init: function (this: any) {
-              const images = document.querySelectorAll<HTMLImageElement>('.vlt-work-carousel-masonry img');
-              let loadedCount = 0;
-              const swiperInstance = this;
-
-              images.forEach(img => {
-                if (img.complete) {
-                  loadedCount++;
-                } else {
-                  img.addEventListener('load', () => {
-                    loadedCount++;
-                    if (loadedCount === images.length && swiperInstance?.update) {
-                      swiperInstance.update();
-                    }
-                  });
-                }
-              });
-
-              if (loadedCount === images.length && swiperInstance?.update) {
-                swiperInstance.update();
-              }
-            }
-          }
-        });
-      }, 50);
-    };
-
-    initSwipers();
-  }, []);
+  // Your portfolio images array
+ const portfolioImages = [
+    '/assets/img/portfolio/1.jpg',
+    '/assets/img/portfolio/2.jpg',
+    '/assets/img/portfolio/3.jpg',
+    '/assets/img/portfolio/4.jpg',
+    '/assets/img/portfolio/5.jpg',
+    '/assets/img/portfolio/6.jpg',
+    '/assets/img/portfolio/7.jpg',
+    '/assets/img/portfolio/8.jpg',
+    '/assets/img/portfolio/10.jpg',
+    '/assets/img/portfolio/11.jpg',
+    '/assets/img/portfolio/12.jpg',
+  ];
 
   // Framer Motion variants
   const fadeInVariants = {
@@ -116,6 +56,110 @@ const HomePage: React.FC = () => {
       }
     }
   };
+
+  const handleImageLoad = () => {
+    loadedImagesCount.current += 1;
+    if (loadedImagesCount.current === portfolioImages.length) {
+      setImagesLoaded(true);
+      // Update swiper after all images loaded with slight delay
+      setTimeout(() => {
+        if (portfolioSwiperRef.current && portfolioSwiperRef.current.swiper) {
+          portfolioSwiperRef.current.swiper.update();
+          portfolioSwiperRef.current.swiper.updateSlides();
+          portfolioSwiperRef.current.swiper.updateProgress();
+        }
+      }, 100);
+    }
+  };
+
+  const handlePortfolioSwiper = (swiper: any) => {
+    // Initial update
+    setTimeout(() => {
+      if (swiper?.update) {
+        swiper.update();
+        swiper.updateSlides();
+        swiper.updateProgress();
+      }
+    }, 100);
+
+    // Check if images are already loaded
+    const images = document.querySelectorAll('.vlt-work-carousel-masonry img');
+    let loadedCount = 0;
+
+    images.forEach((img: any) => {
+      if (img.complete) {
+        loadedCount++;
+      } else {
+        img.addEventListener('load', () => {
+          loadedCount++;
+          if (loadedCount === images.length && swiper?.update) {
+            setTimeout(() => {
+              swiper.update();
+              swiper.updateSlides();
+              swiper.updateProgress();
+            }, 50);
+          }
+        });
+      }
+    });
+
+    if (loadedCount === images.length && swiper?.update) {
+      setTimeout(() => {
+        swiper.update();
+        swiper.updateSlides();
+        swiper.updateProgress();
+      }, 50);
+    }
+  };
+
+  useEffect(() => {
+    // Reset counter when component mounts
+    loadedImagesCount.current = 0;
+
+    const initSwipers = async () => {
+      // Import Swiper modules
+      const SwiperClass = (await import("swiper")).default;
+      const { Navigation, Pagination, Autoplay } = await import("swiper/modules");
+
+      // Wait a moment for components to mount
+      setTimeout(() => {
+        // Testimonials Slider
+        new SwiperClass(".vlt-content-slider .swiper-container", {
+          modules: [Navigation, Pagination, Autoplay],
+          spaceBetween: 100,
+          loop: true,
+          autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+          },
+          navigation: {
+            nextEl: ".vlt-testimonials-slider-anchor .vlt-swiper-button-next",
+            prevEl: ".vlt-testimonials-slider-anchor .vlt-swiper-button-prev",
+          },
+          pagination: {
+            el: ".vlt-testimonials-slider-anchor .vlt-swiper-pagination",
+            clickable: true,
+          },
+        });
+      }, 50);
+    };
+
+    initSwipers();
+
+    // Additional update for portfolio swiper after mount
+    const updateInterval = setInterval(() => {
+      if (portfolioSwiperRef.current && portfolioSwiperRef.current.swiper) {
+        portfolioSwiperRef.current.swiper.update();
+        portfolioSwiperRef.current.swiper.updateSlides();
+        portfolioSwiperRef.current.swiper.updateProgress();
+      }
+    }, 200);
+
+    // Clear interval after 2 seconds
+    setTimeout(() => clearInterval(updateInterval), 2000);
+
+    return () => clearInterval(updateInterval);
+  }, []);
 
   const marqueeServices1 = [
     { name: 'Banner Design', image: '/assets/img/marquee/Bannerdesign.jpg' },
@@ -162,19 +206,7 @@ const HomePage: React.FC = () => {
     },
   ];
 
-  const portfolioImages = [
-    '/assets/img/portfolio/1.jpg',
-    '/assets/img/portfolio/2.jpg',
-    '/assets/img/portfolio/3.jpg',
-    '/assets/img/portfolio/4.jpg',
-    '/assets/img/portfolio/5.jpg',
-    '/assets/img/portfolio/6.jpg',
-    '/assets/img/portfolio/7.jpg',
-    '/assets/img/portfolio/8.jpg',
-    '/assets/img/portfolio/10.jpg',
-    '/assets/img/portfolio/11.jpg',
-    '/assets/img/portfolio/12.jpg',
-  ];
+  
 
   return (
     <>
@@ -279,20 +311,6 @@ const HomePage: React.FC = () => {
           padding:20px 70px;
           font-size: 16px;
         }
-            /* CONTENT SLIDER STYLES */
-        .vlt-content-slider {
-          width: 100%;
-        }
-
-        @media only screen and (min-width: 768px) {
-          .vlt-content-slider[data-slides-centered="enable"] .swiper-slide {
-            width: auto !important;
-          }
-        }
-
-        .vlt-content-slider[data-slides-centered="enable"] .swiper-container {
-          overflow: unset;
-        }
                /* PORTFOLIO STYLES */
         .vlt-work {
           position: relative;
@@ -323,6 +341,9 @@ const HomePage: React.FC = () => {
         .vlt-work:hover .vlt-work__media img {
           transform: scale(1.05);
         }
+          .vlt-work-carousel-masonry .swiper-wrapper {
+  min-height: 600px; /* height of your images */
+}
 
       `}</style>
       <div className="vlt-site-overlay"></div>
@@ -870,126 +891,191 @@ const HomePage: React.FC = () => {
           </section>
 
           {/* Work Insights Section */}
-          <section className="has-black-color">
-            <div className="d-flex flex-column" style={{ minHeight: '100vh' }}>
-              <div className="vlt-gap-80"></div>
-              <div className="text-center">
-                <motion.div
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeInVariants}
-                  transition={{ duration: 1, delay: 0 }}
-                  className="vlt-animated-block"
-                >
-                  <span className="vlt-display-1 has-primary-color">Work Insights</span>
-                </motion.div>
-                <motion.div
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeInVariants}
-                  transition={{ duration: 1, delay: 0 }}
-                  className="vlt-animated-block"
-                >
-                  <div className="vlt-section-title vlt-section-title--style-2">
-                    <h4 className="vlt-section-title__title" style={{ fontSize: '35px' }}>
-                      Sculpting Success: Where Creativity Meets Conversion in Every Frame
-                    </h4>
-                                  </div>
-                </motion.div>
+             <section className="has-black-color">
+        <div className="d-flex flex-column" style={{ height: 'auto' }}>
+          <div className="vlt-gap-80"></div>
+          
+          {/* Work Insights Header */}
+          <div className="text-center">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInVariants}
+              transition={{ duration: 1, delay: 0 }}
+              className="vlt-animated-block"
+            >
+              <span className="vlt-display-1 has-primary-color">Work Insights</span>
+            </motion.div>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInVariants}
+              transition={{ duration: 1, delay: 0 }}
+              className="vlt-animated-block"
+            >
+              <div className="vlt-section-title vlt-section-title--style-2">
+                <h4 className="vlt-section-title__title" style={{ fontSize: '35px' }}>
+                  Sculpting Success: Where Creativity Meets Conversion in Every Frame
+                </h4>
               </div>
-              <div className="vlt-gap-40"></div>
-              <div className="container">
-                <video width="100%" loop autoPlay muted style={{ objectFit: 'contain' }}>
-                  <source src="/assets/img/pages/home/promoproductvideo.mp4" type="video/mp4" />
-                </video>
-              </div>
-              <div className="vlt-gap-80"></div>
+            </motion.div>
+          </div>
+          
+          <div className="vlt-gap-40"></div>
+          
+          {/* Video Section */}
+          <div className="container">
+            <video width="100%" loop autoPlay muted style={{ objectFit: 'contain' }}>
+              <source src="/assets/img/pages/home/promoproductvideo.mp4" type="video/mp4" />
+            </video>
+          </div>
+          
+          <div className="vlt-gap-80"></div>
 
-              {/* Portfolio Section */}
-              <div className="text-center">
-                <motion.div
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeInVariants}
-                  transition={{ duration: 1, delay: 0 }}
-                  className="vlt-animated-block"
-                >
-                  <span className="vlt-display-1 has-primary-color">Portfolio</span>
-                </motion.div>
-                <motion.div
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  variants={fadeInVariants}
-                  transition={{ duration: 1, delay: 0 }}
-                  className="vlt-animated-block"
-                >
-                  <div className="vlt-section-title vlt-section-title--style-2">
-                    <h4 className="vlt-section-title__title" style={{ fontSize: '35px' }}>
-                      Crafting Digital Experiences with Passion and Precision!
-                    </h4>
-                  </div>
-                </motion.div>
+          {/* Portfolio Header */}
+          <div className="text-center">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInVariants}
+              transition={{ duration: 1, delay: 0 }}
+              className="vlt-animated-block"
+            >
+              <span className="vlt-display-1 has-primary-color">Portfolio</span>
+            </motion.div>
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeInVariants}
+              transition={{ duration: 1, delay: 0 }}
+              className="vlt-animated-block"
+            >
+              <div className="vlt-section-title vlt-section-title--style-2">
+                <h4 className="vlt-section-title__title" style={{ fontSize: '35px' }}>
+                  Crafting Digital Experiences with Passion and Precision!
+                </h4>
               </div>
-              <div className="vlt-gap-40"></div>
+            </motion.div>
+          </div>
+          
+          <div className="vlt-gap-40"></div>
 
-              <div className="d-flex flex-grow-1 flex-shrink-1">
-                <div className="container-fluid p-0 align-self-center">
-                  <div className="vlt-content-slider vlt-work-carousel-masonry">
-                    <div className="swiper-container">
-                      <div className="swiper-wrapper">
-                        {portfolioImages.map((img, idx) => (
-                          <div key={idx} className="swiper-slide">
-                            <div className="grid-item filter-photography">
-                              <article className="vlt-work vlt-work--style-6">
-                                <div className="vlt-work__media">
-                                  <Link className="vlt-work__link has-cursor" href="#"></Link>
-                                  <Image src={img} alt={`Portfolio${idx + 1}`} width={600} height={600} loading="lazy" />
-                                </div>
-                              </article>
-                            </div>
+          {/* Portfolio Swiper */}
+          <div className="d-flex flex-grow-1 flex-shrink-1">
+            <div className="container-fluid p-0 align-self-center">
+              <div className="vlt-content-slider vlt-work-carousel-masonry">
+                <Swiper
+                  ref={portfolioSwiperRef}
+                  modules={[Navigation, Autoplay]}
+                  loop={true}
+                  speed={1000}
+                  spaceBetween={30}
+                  grabCursor={true}
+                  centeredSlides={false}
+                  slidesPerView={3}
+                  watchOverflow={true}
+                  observer={true}
+                  observeParents={true}
+                  watchSlidesProgress={true}
+                  autoplay={{
+                    delay: 1500,
+                    disableOnInteraction: false,
+                  }}
+                  navigation={{
+                    nextEl: '.vlt-work-carousel-masonry .vlt-swiper-button-next',
+                    prevEl: '.vlt-work-carousel-masonry .vlt-swiper-button-prev',
+                  }}
+                  breakpoints={{
+                    320: { slidesPerView: 1 },
+                    768: { slidesPerView: 2 },
+                    1024: { slidesPerView: 3 },
+                  }}
+                  onInit={handlePortfolioSwiper}
+                  onSwiper={handlePortfolioSwiper}
+                >
+                  {portfolioImages.map((img, idx) => (
+                    <SwiperSlide key={idx}>
+                      <div className="grid-item filter-photography">
+                        <article className="vlt-work vlt-work--style-6">
+                          <div className="vlt-work__media">
+                            <Link className="vlt-work__link has-cursor" href="#">
+                              <span></span>
+                            </Link>
+                            <Image 
+                              src={img} 
+                              alt={`Portfolio${idx + 1}`} 
+                              width={600} 
+                              height={600} 
+                              // 
+                               priority={true} 
+                            />
                           </div>
-                        ))}
+                        </article>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="vlt-gap-20"></div>
-              <div className="flex-grow-0 flex-shrink-0">
-                <div className="container">
-                  <div className="row d-flex justify-content-between align-items-center">
-                    <div className="col-auto">
-                      <a className="vlt-social-icon vlt-social-icon--style-1" href="https://www.facebook.com/vectorart.co/" target="_blank" rel="noopener noreferrer">
-                        Fb.
-                      </a>
-                      <a className="vlt-social-icon vlt-social-icon--style-1" href="https://twitter.com/vart_services" target="_blank" rel="noopener noreferrer">
-                        Tw.
-                      </a>
-                      <a className="vlt-social-icon vlt-social-icon--style-1" href="https://www.instagram.com/vectorartusa/" target="_blank" rel="noopener noreferrer">
-                        In.
-                      </a>
-                      <a className="vlt-social-icon vlt-social-icon--style-1" href="https://www.linkedin.com/company/vectorart/" target="_blank" rel="noopener noreferrer">
-                        Ln.
-                      </a>
-                    </div>
-                    <div className="col-auto">
-                      <div className="vlt-slider-controls vlt-slider-controls--style-1 vlt-work-carousel-masonry">
-                        <div className="vlt-swiper-button-prev">Prev</div>
-                        <span className="sep">|</span>
-                        <div className="vlt-swiper-button-next">Next</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="vlt-gap-50"></div>
-                </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
               </div>
             </div>
-          </section>
+          </div>
+
+          <div className="vlt-gap-20"></div>
+          
+          {/* Footer Controls */}
+          <div className="flex-grow-0 flex-shrink-0">
+            <div className="container">
+              <div className="row d-flex justify-content-between align-items-center">
+                <div className="col-auto">
+                  <a 
+                    className="vlt-social-icon vlt-social-icon--style-1" 
+                    href="https://www.facebook.com/vectorart.co/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    Fb.
+                  </a>
+                  <a 
+                    className="vlt-social-icon vlt-social-icon--style-1" 
+                    href="https://twitter.com/vart_services" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    Tw.
+                  </a>
+                  <a 
+                    className="vlt-social-icon vlt-social-icon--style-1" 
+                    href="https://www.instagram.com/vectorartusa/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    In.
+                  </a>
+                  <a 
+                    className="vlt-social-icon vlt-social-icon--style-1" 
+                    href="https://www.linkedin.com/company/vectorart/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    Ln.
+                  </a>
+                </div>
+                <div className="col-auto">
+                  <div className="vlt-slider-controls vlt-slider-controls--style-1 vlt-work-carousel-masonry">
+                    <div className="vlt-swiper-button-prev">Prev</div>
+                    <span className="sep">|</span>
+                    <div className="vlt-swiper-button-next">Next</div>
+                  </div>
+                </div>
+              </div>
+              <div className="vlt-gap-50"></div>
+            </div>
+          </div>
+        </div>
+      </section>
 
           {/* CTA Section */}
           <section className="has-primary-background-color has-white-color">
