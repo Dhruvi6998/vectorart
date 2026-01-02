@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import Head from 'next/head';
-import Link from 'next/link';
 import { IoCard, IoMegaphone, IoBagCheck} from "react-icons/io5";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import { motion, easeOut } from 'framer-motion';
@@ -102,7 +100,6 @@ const ExampleAndPlansPage: React.FC = () => {
     }
   ];
 
-  // Framer Motion variants
   const fadeVariant = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 }
@@ -110,16 +107,162 @@ const ExampleAndPlansPage: React.FC = () => {
 
   return (
     <>
-      <Head>
-        <title>Example & Plans | Vectorart.co Quality Design at Competitive price</title>
-        <meta name="keywords" content="design, pricing, order, logo, simple, Vector art , Graphic design" />
-        <meta name="description" content="we tailoring professional design solutions with storage services at a competitive price, meeting all your creative needs through close client collaboration." />
-      </Head>
+      <style jsx>{`
+        /* WIDGET: BUTTON */
+        .custom-btn {
+          font-weight: 700;
+          line-height: 1.1;
+          position: relative;
+          z-index: 1;
+          display: inline-flex;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 300ms;
+          white-space: nowrap;
+          text-decoration: none;
+          border: none;
+          outline: 0;
+          box-shadow: none;
+          justify-content: center;
+          align-items: center;
+          padding: 14px 30px;
+          font-size: 14px;
+        }
+
+        .custom-btn:disabled,
+        .custom-btn.disabled {
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+
+        .custom-btn:focus {
+          outline: none;
+        }
+
+        .custom-btn span {
+          position: absolute;
+          z-index: -1;
+          display: block;
+          width: 0;
+          height: 0;
+          transition: width 600ms, height 600ms;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+        }
+
+        .custom-btn:hover {
+          text-decoration: none;
+        }
+
+        .custom-btn:hover span {
+          width: 40rem;
+          height: 40rem;
+        }
+
+        .custom-btn--primary {
+          color: #fff;
+          background-color: #e82e31;
+        }
+
+        .custom-btn--primary span {
+          background-color: #101010;
+        }
+
+        .custom-btn--primary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--secondary {
+          color: #fff;
+          background-color: #101010;
+        }
+
+        .custom-btn--secondary span {
+          background-color: #e82e31;
+        }
+
+        .custom-btn--secondary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--tertiary {
+          color: #fff;
+          background-color: #e82e31;
+        }
+
+        .custom-btn--tertiary span {
+          background-color: #101010;
+        }
+
+        .custom-btn--tertiary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--sm {
+          padding: 10px 20px;
+          font-size: 13px;
+        }
+
+        .custom-btn--lg {
+          padding: 20px 70px;
+          font-size: 16px;
+        }
+
+        .accordion {
+          background-color: #000;
+          color: #fff;
+          cursor: pointer;
+          padding: 38px;
+          width: 100%;
+          border: none;
+          text-align: left;
+          outline: none;
+          font-size: 15px;
+          transition: 0.4s;
+          position: relative;
+        }
+
+        .accordion:hover,
+        .accactive {
+          background-color: rgb(22, 20, 20);
+        }
+
+        .accordion:after {
+          content: '+';
+          color: #fff;
+          font-weight: bold;
+          float: right;
+          margin-left: 5px;
+        }
+
+        .accactive:after {
+          content: '-';
+        }
+
+        .panel {
+          width: 100%;
+          color: white;
+          padding: 0 18px;
+          background-color: rgba(78, 78, 78, 1);
+          overflow: hidden;
+        }
+
+        :global(.quote-link) {
+          color: #000 !important;
+          text-decoration: none !important;
+          transition: color 0.3s ease;
+        }
+
+        :global(.quote-link:hover) {
+          color: #e82e31 !important;
+          text-decoration: none !important;
+        }
+        
+      `}</style>
 
       <div className="vlt-site-overlay"></div>
       <main className="vlt-main">
         <div className="vlt-page-content">
-          {/* Page Title Section */}
           <section className="has-white-color" style={{ backgroundImage: 'url(assets/img/pages/aboutus/aboutusbg.jpg)', backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }}>
             <div className="vlt-page-title vlt-page-title--style-4">
               <div className="container">
@@ -141,7 +284,6 @@ const ExampleAndPlansPage: React.FC = () => {
 
           <div className="vlt-gap-80"></div>
 
-          {/* Main Content Section */}
           <section>
             <div className="container">
               <div className="row">
@@ -182,7 +324,6 @@ const ExampleAndPlansPage: React.FC = () => {
 
               <div className="vlt-gap-80"></div>
 
-              {/* Pricing Table */}
               <motion.div 
                 className="row"
                 initial="hidden"
@@ -204,7 +345,7 @@ const ExampleAndPlansPage: React.FC = () => {
                         <td>{row.particular}</td>
                         <td>
                           {row.isLink ? (
-                            <Link href="/contact">{row.price}</Link>
+                            <a href="/contact">{row.price}</a>
                           ) : (
                             row.price
                           )}
@@ -217,7 +358,6 @@ const ExampleAndPlansPage: React.FC = () => {
 
               <div className="vlt-gap-80"></div>
 
-              {/* Features Grid */}
               <motion.div 
                 className="row"
                 initial="hidden"
@@ -249,7 +389,6 @@ const ExampleAndPlansPage: React.FC = () => {
 
           <div className="vlt-gap-80"></div>
 
-          {/* Web Packages Section */}
           <section className="has-white-color" style={{ backgroundColor: 'black' }}>
             <div className="vlt-gap-80"></div>
             <div className="container-fluid">
@@ -271,7 +410,6 @@ const ExampleAndPlansPage: React.FC = () => {
               </div>
 
               <div className="row">
-                {/* Basic Plan */}
                 <div className="col-md-3">
                   <motion.div 
                     className="vlt-animated-block"
@@ -305,14 +443,29 @@ const ExampleAndPlansPage: React.FC = () => {
                         </ul>
                       </div>
                       <div className="vlt-pricing-table__action">
-                        <a className="vlt-btn vlt-btn--secondary vlt-btn--lg" href="https://partnerproofs.com/login" target="_blank" rel="noopener noreferrer">Order Now!</a>
+                        <a 
+                          className="custom-btn custom-btn--secondary custom-btn--lg" 
+                          href="https://partnerproofs.com/login" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
+                        >
+                          Order Now!
+                          <span></span>
+                        </a>
                       </div>
                     </div>
                   </motion.div>
                   <div className="vlt-gap-60--sm"></div>
                 </div>
 
-                {/* Standard Plan */}
                 <div className="col-md-3">
                   <motion.div 
                     className="vlt-animated-block"
@@ -347,16 +500,31 @@ const ExampleAndPlansPage: React.FC = () => {
                         </ul>
                       </div>
                       <div className="vlt-pricing-table__action">
-                        <a className="vlt-btn vlt-btn--tertiary vlt-btn--lg" href="https://partnerproofs.com/login" target="_self" rel="noopener noreferrer">Order Now!</a>
+                        <a 
+                          className="custom-btn custom-btn--tertiary custom-btn--lg" 
+                          href="https://partnerproofs.com/login" 
+                          target="_self" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
+                        >
+                          Order Now!
+                          <span></span>
+                        </a>
                       </div>
                     </div>
                   </motion.div>
                   <div className="vlt-gap-60--sm"></div>
                 </div>
 
-                {/* Logo Package */}
                 <div className="col-md-3 position-relative">
-                  <img className="vlt-particle" src="assets/img/root/square-plus-pattern-long.png" data-animation-name="fadeInRight" alt="square-plus-pattern-long.png" style={{ position: 'absolute', bottom: '-240px', right: '-130px', maxWidth: '210px', ['--animate-delay' as any]: '.5s' }} loading="lazy" />
+                  <img className="vlt-particle" src="assets/img/root/square-plus-pattern-long.png" data-animation-name="fadeInRight" alt="square-plus-pattern-long.png" style={{ position: 'absolute', bottom: '-240px', right: '-130px', maxWidth: '210px' }} loading="lazy" />
                   <motion.div 
                     className="vlt-animated-block"
                     initial="hidden"
@@ -380,13 +548,28 @@ const ExampleAndPlansPage: React.FC = () => {
                         </ul>
                       </div>
                       <div className="vlt-pricing-table__action">
-                        <a className="vlt-btn vlt-btn--secondary vlt-btn--lg" href="https://partnerproofs.com/login" target="_blank" rel="noopener noreferrer">Order Now!</a>
+                        <a 
+                          className="custom-btn custom-btn--secondary custom-btn--lg" 
+                          href="https://partnerproofs.com/login" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
+                        >
+                          Order Now!
+                          <span></span>
+                        </a>
                       </div>
                     </div>
                   </motion.div>
                 </div>
 
-                {/* Advanced Plan */}
                 <div className="col-md-3 position-relative">
                   <motion.div 
                     className="vlt-animated-block"
@@ -415,7 +598,23 @@ const ExampleAndPlansPage: React.FC = () => {
                         </ul>
                       </div>
                       <div className="vlt-pricing-table__action">
-                        <a className="vlt-btn vlt-btn--tertiary vlt-btn--lg" href="https://partnerproofs.com/login" target="_self" rel="noopener noreferrer">Order Now!</a>
+                        <a 
+                          className="custom-btn custom-btn--tertiary custom-btn--lg" 
+                          href="https://partnerproofs.com/login" 
+                          target="_self" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
+                        >
+                          Order Now!
+                          <span></span>
+                        </a>
                       </div>
                     </div>
                   </motion.div>
@@ -425,7 +624,6 @@ const ExampleAndPlansPage: React.FC = () => {
             <div className="vlt-gap-80"></div>
           </section>
 
-          {/* Accordion Section */}
           <section>
             <div className="vlt-gap-80"></div>
             <div className="container">
@@ -469,22 +667,40 @@ const ExampleAndPlansPage: React.FC = () => {
                               <div className="row">
                                 <div style={{ margin: '10px' }}>
                                   <a
-                                    className="vlt-btn vlt-btn--secondary vlt-btn--sm"
+                                    className="custom-btn custom-btn--secondary custom-btn--sm"
                                     href="https://partnerproofs.com/login"
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    onMouseMove={(e) => {
+                                      const rect = e.currentTarget.getBoundingClientRect();
+                                      const span = e.currentTarget.querySelector('span');
+                                      if (span) {
+                                        span.style.left = `${e.clientX - rect.left}px`;
+                                        span.style.top = `${e.clientY - rect.top}px`;
+                                      }
+                                    }}
                                   >
                                     Simple Pricing {item.simplePricing}
+                                    <span></span>
                                   </a>
                                 </div>
                                 <div style={{ margin: '10px' }}>
                                   <a
-                                    className="vlt-btn vlt-btn--secondary vlt-btn--sm"
+                                    className="custom-btn custom-btn--secondary custom-btn--sm"
                                     href="https://partnerproofs.com/login"
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    onMouseMove={(e) => {
+                                      const rect = e.currentTarget.getBoundingClientRect();
+                                      const span = e.currentTarget.querySelector('span');
+                                      if (span) {
+                                        span.style.left = `${e.clientX - rect.left}px`;
+                                        span.style.top = `${e.clientY - rect.top}px`;
+                                      }
+                                    }}
                                   >
                                     Priority Pricing {item.priorityPricing}
+                                    <span></span>
                                   </a>
                                 </div>
                               </div>
@@ -498,59 +714,6 @@ const ExampleAndPlansPage: React.FC = () => {
                 </div>
               </motion.div>
             </div>
-
-            {/* Accordion CSS */}
-            <style jsx>{`
-              .accordion {
-                background-color: #000;
-                color: #fff;
-                cursor: pointer;
-                padding: 38px;
-                width: 100%;
-                border: none;
-                text-align: left;
-                outline: none;
-                font-size: 15px;
-                transition: 0.4s;
-                position: relative;
-              }
-
-              .accordion:hover,
-              .accactive {
-                background-color: rgb(22, 20, 20);
-              }
-
-              .accordion:after {
-                content: '+';
-                color: #fff;
-                font-weight: bold;
-                float: right;
-                margin-left: 5px;
-              }
-
-              .accactive:after {
-                content: '-';
-              }
-
-              .panel {
-                width: 100%;
-                color: white;
-                padding: 0 18px;
-                background-color: rgba(78, 78, 78, 1);
-                overflow: hidden;
-              }
-
-              :global(.quote-link) {
-                color: #000 !important;
-                text-decoration: none !important;
-                transition: color 0.3s ease;
-              }
-
-              :global(.quote-link:hover) {
-                color: #e82e31 !important;
-                text-decoration: none !important;
-              }
-            `}</style>
           </section>
 
         </div>

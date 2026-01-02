@@ -823,7 +823,59 @@ export default function NewsDetailPage() {
   }, [slug, router]);
 
   if (!news) {
-    return <div>Loading...</div>;
+   return (
+  <div>
+    <div className="loader-container">
+      <div className="loader"></div>
+
+      <style jsx>{`
+        .loader-container {
+          position: fixed;
+          bottom: 20px;
+          left: 20px;
+          z-index: 1000;
+        }
+
+        .loader {
+          width: 40px;
+          height: 40px;
+          border: 4px solid rgba(255, 0, 0, 0.3);
+          border-top-color: #ff0000;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .loader::after {
+          content: '';
+          position: absolute;
+          top: -4px;
+          left: -4px;
+          right: -4px;
+          bottom: -4px;
+          border-radius: 50%;
+          box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+          opacity: 0;
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 0;
+          }
+          50% {
+            opacity: 1;
+          }
+        }
+      `}</style>
+    </div>
+  </div>
+);
   }
 
   return (

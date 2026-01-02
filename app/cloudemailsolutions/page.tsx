@@ -25,6 +25,108 @@ const staggerContainer = {
 const CloudEmailSolutionsPage: React.FC = () => {
   return (
     <>
+       <style jsx>{`
+        /* WIDGET: BUTTON */
+        .custom-btn {
+          font-weight: 700;
+          line-height: 1.1;
+          position: relative;
+          z-index: 1;
+          display: inline-flex;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 300ms;
+          white-space: nowrap;
+          text-decoration: none;
+          border: none;
+          outline: 0;
+          box-shadow: none;
+          justify-content: center;
+          align-items: center;
+          padding: 14px 30px;
+          font-size: 14px;
+        }
+
+        .custom-btn:disabled,
+        .custom-btn.disabled {
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+
+        .custom-btn:focus {
+          outline: none;
+        }
+
+        .custom-btn span {
+          position: absolute;
+          z-index: -1;
+          display: block;
+          width: 0;
+          height: 0;
+          transition: width 600ms, height 600ms;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+        }
+
+        .custom-btn:hover {
+          text-decoration: none;
+        }
+
+        .custom-btn:hover span {
+          width: 40rem;
+          height: 40rem;
+        }
+
+        .custom-btn--primary {
+          color: #fff;
+          background-color: #e82e31;
+        }
+
+        .custom-btn--primary span {
+          background-color: #101010;
+        }
+
+        .custom-btn--primary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--secondary {
+          color: #fff;
+          background-color: #101010;
+        }
+
+        .custom-btn--secondary span {
+          background-color: #e82e31;
+        }
+
+        .custom-btn--secondary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--tertiary {
+          color: #fff;
+          background-color: #e82e31;
+        }
+
+        .custom-btn--tertiary span {
+          background-color: #101010;
+        }
+
+        .custom-btn--tertiary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--sm {
+          padding: 10px 20px;
+          font-size: 13px;
+        }
+
+        .custom-btn--lg {
+          padding:20px 70px;
+          font-size: 16px;
+        }
+
+      `}</style>
       {/* Site overlay */}
       <div className="vlt-site-overlay"></div>
 
@@ -141,12 +243,23 @@ const CloudEmailSolutionsPage: React.FC = () => {
 
                         <div className="vlt-gap-30"></div>
 
-                        <Link
-                          href="/googleworkspace"
-                          className="vlt-btn vlt-btn--secondary vlt-btn--md"
+                        <a 
+                          className="custom-btn custom-btn--secondary custom-btn--lg" 
+                          href="/googleworkspace" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
                         >
                           Read More
-                        </Link>
+                          <span></span>
+                        </a>
                       </div>
                     </div>
 
@@ -191,12 +304,23 @@ const CloudEmailSolutionsPage: React.FC = () => {
 
                         <div className="vlt-gap-30"></div>
 
-                        <Link
-                          href="/googleworkspaceforeducation"
-                          className="vlt-btn vlt-btn--secondary vlt-btn--md"
-                        >
-                          Read More
-                        </Link>
+                        <a 
+                          className="custom-btn custom-btn--secondary custom-btn--lg" 
+                          href="/googleworkspaceforeducation" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
+                        >Read More
+                        
+                          <span></span>
+                        </a>
                       </div>
                     </div>
 
@@ -240,12 +364,23 @@ const CloudEmailSolutionsPage: React.FC = () => {
 
                         <div className="vlt-gap-30"></div>
 
-                        <Link
-                          href="/microsoft365"
-                          className="vlt-btn vlt-btn--secondary vlt-btn--md"
+                       <a 
+                          className="custom-btn custom-btn--secondary custom-btn--lg" 
+                          href="/microsoft365" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
                         >
                           Read More
-                        </Link>
+                          <span></span>
+                        </a>
                       </div>
                     </div>
 
@@ -284,12 +419,23 @@ const CloudEmailSolutionsPage: React.FC = () => {
 
                         <div className="vlt-gap-30"></div>
 
-                        <Link
-                          href="/contact"
-                          className="vlt-btn vlt-btn--secondary vlt-btn--md"
+                      <a 
+                          className="custom-btn custom-btn--secondary custom-btn--lg" 
+                          href="/contact" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
                         >
                           Read More
-                        </Link>
+                          <span></span>
+                        </a>
                       </div>
                     </div>
 

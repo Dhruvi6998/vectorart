@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { IoCall, IoMail, IoNavigate } from "react-icons/io5";
 import Link from "next/link";
-import { motion, easeOut } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 interface Currency {
   code: string;
@@ -16,7 +16,14 @@ const Footer: React.FC = () => {
   const dropdownRef = useRef<HTMLUListElement>(null);
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLDivElement>(null); // NEW: ref for animation
+  
+  // State for tracking visibility
+  const [paymentVisible, setPaymentVisible] = useState(false);
+  const [memberVisible, setMemberVisible] = useState(false);
+  
+  // Refs for animation sections
+  const paymentSectionRef = useRef<HTMLDivElement>(null);
+  const memberSectionRef = useRef<HTMLDivElement>(null);
 
   const currencies: Currency[] = [
     { code: "INR", symbol: "₹", name: "Indian Rupee", url: "https://rzp.io/rzp/jobspayment" },
@@ -31,40 +38,52 @@ const Footer: React.FC = () => {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 1.2,
-        ease: easeOut
+        duration: 1,
+        ease: "easeOut"
       }
     }
   };
 
-  const [hasAnimated, setHasAnimated] = useState(false);
-
-  // NEW: IntersectionObserver for reliable viewport detection
+  // IntersectionObserver for scroll animations
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !hasAnimated) {
-            setHasAnimated(true);
-          }
-        });
-      },
-      {
-        threshold: 0.3, // Trigger when 30% visible
-        rootMargin: '0px'
-      }
-    );
+    const observerOptions = {
+      threshold: 0.3,
+      rootMargin: '-100px'
+    };
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
+    const paymentObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !paymentVisible) {
+          setPaymentVisible(true);
+        }
+      });
+    }, observerOptions);
+
+    const memberObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !memberVisible) {
+          setMemberVisible(true);
+        }
+      });
+    }, observerOptions);
+
+    if (paymentSectionRef.current) {
+      paymentObserver.observe(paymentSectionRef.current);
+    }
+
+    if (memberSectionRef.current) {
+      memberObserver.observe(memberSectionRef.current);
     }
 
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
+      if (paymentSectionRef.current) {
+        paymentObserver.unobserve(paymentSectionRef.current);
+      }
+      if (memberSectionRef.current) {
+        memberObserver.unobserve(memberSectionRef.current);
       }
     };
-  }, [hasAnimated]);
+  }, [paymentVisible, memberVisible]);
 
   const positionDropdown = () => {
     if (!dropdownRef.current || !wrapperRef.current) return;
@@ -129,11 +148,6 @@ const Footer: React.FC = () => {
   return (
     <>
       <style jsx>{`
-        svg g {
-          animation: rotateCircle 10s linear infinite;
-          transform-origin: 150px 150px;
-        }
-
         @keyframes rotateCircle {
           0% {
             transform: rotate(0deg);
@@ -155,19 +169,26 @@ const Footer: React.FC = () => {
         }
       `}</style>
 
-      {/* Footer */}
-      <section>
+      {/* Payment Options Section */}
+      <motion.section
+        ref={paymentSectionRef}
+        initial="hidden"
+        animate={paymentVisible ? "visible" : "hidden"}
+        variants={fadeVariants}
+      >
         <div className="vlt-gap-30"></div>
         <div className="text-center">
-          {/* Animated block */}
           <div className="vlt-animated-block">
-            {/* Section title */}
             <h2 className="vlt-section-title__title">Payment Options</h2>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section>
+      <motion.section
+        initial="hidden"
+        animate={paymentVisible ? "visible" : "hidden"}
+        variants={fadeVariants}
+      >
         <div className="vlt-gap-30"></div>
         <div className="row" style={{ textAlign: 'center', alignItems: 'center' }}>
           <div className="col-md-6">
@@ -201,25 +222,23 @@ const Footer: React.FC = () => {
             <p>Email us for bank details: <a href='mailto:info@vartservices.com'>info@vartservices.com</a></p>
           </div>
         </div>
-      </section>
+      </motion.section>
 
+      {/* Proud Member Of Section */}
       <section>
         <div className="vlt-gap-30"></div>
         <div className="container-fluid">
           <motion.div 
-            ref={sectionRef} // CHANGED: Added ref
+            ref={memberSectionRef}
             className="row" 
             style={{ alignItems: 'center' }}
             initial="hidden"
-            animate={hasAnimated ? "visible" : "hidden"} // CHANGED: Simplified animate
+            animate={memberVisible ? "visible" : "hidden"}
             variants={fadeVariants}
-            // REMOVED: onViewportEnter and viewport props
           >
             <div className="col-12 col-lg-4">
               <div className="text-center">
-                {/* Animated block */}
                 <div className="vlt-animated-block">
-                  {/* Section title */}
                   <h3 className="vlt-section-title__title">Proud Member Of</h3>
                 </div>
               </div>
@@ -241,7 +260,7 @@ const Footer: React.FC = () => {
       <footer className="vlt-footer vlt-footer--style-2" style={{ paddingBottom: '50px' }}>
         <div className="container" style={{ marginLeft: '0px', marginRight: '0px', maxWidth: '100%' }}>
           <div className="row">
-            {/* Widget 1 - JOIN SVG */}
+            {/* Widget 1 - JOIN SVG with Framer Motion */}
             <div className="col-12 col-sm-6 col-md col-lg">
               <div className="vlt-widget vlt-widget--text vlt-widget--white">
                 <div style={{ fontFamily: 'Arial', textAlign: 'left' }}>
@@ -252,13 +271,21 @@ const Footer: React.FC = () => {
                         <defs>
                           <path id="circlePath" d="M150,150 m-100,0 a100,100 0 1,1 200,0 a100,100 0 1,1 -200,0" />
                         </defs>
-                        <g>
+                        <motion.g
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 10,
+                            repeat: Infinity,
+                            ease: "linear"
+                          }}
+                          style={{ transformOrigin: "150px 150px" }}
+                        >
                           <text fontSize="25" fontFamily="Arial" textLength="628">
                             <textPath href="#circlePath" startOffset="0" fill="white">
                               JOIN US • JOIN US • JOIN US • JOIN US •&nbsp;
                             </textPath>
                           </text>
-                        </g>
+                        </motion.g>
                         <text x="150" y="155" textAnchor="middle" fontSize="30" fill="white" fontFamily="Arial">→</text>
                       </svg>
                     </a>
@@ -272,13 +299,41 @@ const Footer: React.FC = () => {
               <div className="vlt-widget vlt-widget--text vlt-widget--white">
                 <h5 className="text-light">Company</h5>
                 <ul>
-                  <li><Link href="/aboutus" style={{color: "white"}}>About Us</Link></li>
-                  <li><Link href="/contact" style={{color: "white"}}>Contact Us</Link></li>
-                  <li><Link href="/privacypolicy" style={{color: "white"}}>Privacy Policy</Link></li>
-                  <li><Link href="/termsandconditions" style={{color: "white"}}>Terms & Conditions</Link></li>
-                  <li><Link href="/legaldisclaimer" style={{color: "white"}}>Legal Disclaimer</Link></li>
-                  <li><Link href="/payonline" style={{color: "white"}}>Pay Online</Link></li>
-                  <li><Link href="/pentool" style={{color: "white"}}>Pentool</Link></li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/aboutus" style={{color: "inherit"}}>About Us</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/contact" style={{color: "inherit"}}>Contact Us</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/privacypolicy" style={{color: "inherit"}}>Privacy Policy</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/termsandconditions" style={{color: "inherit"}}>Terms & Conditions</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/legaldisclaimer" style={{color: "inherit"}}>Legal Disclaimer</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/payonline" style={{color: "inherit"}}>Pay Online</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/pentool" style={{color: "inherit"}}>Pentool</Link>
+                    </motion.div>
+                  </li>
                 </ul>
                 <div className="vlt-gap-30--sm"></div>
               </div>
@@ -289,13 +344,41 @@ const Footer: React.FC = () => {
               <div className="vlt-widget vlt-widget--text vlt-widget--white">
                 <h5 className="text-light">Services</h5>
                 <ul>
-                  <li><Link href="/graphicdesign" style={{color: "white"}}>Graphic Design</Link></li>
-                  <li><Link href="/digitizing" style={{color: "white"}}>Digitizing</Link></li>
-                  <li><Link href="/imageediting" style={{color: "white"}}>Image Editing</Link></li>
-                  <li><Link href="/technology" style={{color: "white"}}>Technology</Link></li>
-                  <li><Link href="/artandordermanagement" style={{color: "white"}}>Art & Order Management</Link></li>
-                  <li><Link href="/designanddataservices" style={{color: "white"}}>Design & Data Services</Link></li>
-                  <li><Link href="/digitalmarketing" style={{color: "white"}}>Digital Marketing</Link></li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/graphicdesign" style={{color: "inherit"}}>Graphic Design</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/digitizing" style={{color: "inherit"}}>Digitizing</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/imageediting" style={{color: "inherit"}}>Image Editing</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/technology" style={{color: "inherit"}}>Technology</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/artandordermanagement" style={{color: "inherit"}}>Art & Order Management</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/designanddataservices" style={{color: "inherit"}}>Design & Data Services</Link>
+                    </motion.div>
+                  </li>
+                  <li>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/digitalmarketing" style={{color: "inherit"}}>Digital Marketing</Link>
+                    </motion.div>
+                  </li>
                 </ul>
                 <div className="vlt-gap-30--sm"></div>
               </div>
@@ -307,34 +390,46 @@ const Footer: React.FC = () => {
                 <h5 className="text-light">Solutions</h5>
                 <ul>
                   <li>
-                    <Link href="/promovirtuals" style={{ color: "white" }}>
-                      Virtual Sampling – Promo Virtuals
-                    </Link>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/promovirtuals" style={{ color: "inherit" }}>
+                        Virtual Sampling – Promo Virtuals
+                      </Link>
+                    </motion.div>
                   </li>
                   <li>
-                    <Link href="/technologysolutions" style={{ color: "white" }}>
-                      Technology Solutions
-                    </Link>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/technologysolutions" style={{ color: "inherit" }}>
+                        Technology Solutions
+                      </Link>
+                    </motion.div>
                   </li>
                   <li>
-                    <Link href="/erpandordermanagement" style={{ color: "white" }}>
-                      ERP & Order Management
-                    </Link>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/erpandordermanagement" style={{ color: "inherit" }}>
+                        ERP & Order Management
+                      </Link>
+                    </motion.div>
                   </li>
                   <li>
-                    <Link href="/offshoredevelopmentcenter" style={{ color: "white" }}>
-                      Offshore Development Center
-                    </Link>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/offshoredevelopmentcenter" style={{ color: "inherit" }}>
+                        Offshore Development Center
+                      </Link>
+                    </motion.div>
                   </li>
                   <li>
-                    <Link href="/consulting" style={{ color: "white" }}>
-                      Consulting
-                    </Link>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/consulting" style={{ color: "inherit" }}>
+                        Consulting
+                      </Link>
+                    </motion.div>
                   </li>
                   <li>
-                    <Link href="/maintainanceandupgrades" style={{ color: "white" }}>
-                      Maintenance & Upgrades
-                    </Link>
+                    <motion.div whileHover={{ color: '#e82e31' }} transition={{ duration: 0.3 }}>
+                      <Link href="/maintainanceandupgrades" style={{ color: "inherit" }}>
+                        Maintenance & Upgrades
+                      </Link>
+                    </motion.div>
                   </li>
                   <li>
                     <Link
@@ -407,18 +502,46 @@ const Footer: React.FC = () => {
               <a href="tel:+16506101108" style={{ color: "white" }}>Follow us :</a>
               <div className="vlt-gap-10--sm"></div>
               <div className="social-icons" style={{ marginLeft: '20px' }}>
-                <a href="https://www.instagram.com/vectorartusa/" target="_blank" rel="noopener noreferrer" style={{ color: 'white', margin: '0 10px', textDecoration: 'none', fontSize: '20px', transition: 'transform 0.3s ease, color 0.3s ease' }}>
-                  <i className="fab fa-instagram" style={{ color: 'white', transition: 'color 0.3s ease' }} onMouseOver={(e) => { e.currentTarget.style.color = '#e1306c'; e.currentTarget.style.transform = 'scale(2)'; }} onMouseOut={(e) => { e.currentTarget.style.color = 'white'; e.currentTarget.style.transform = 'scale(1)'; }}></i>
-                </a>
-                <a href="https://www.facebook.com/vectorart.co/" target="_blank" rel="noopener noreferrer" style={{ color: 'white', margin: '0 10px', textDecoration: 'none', fontSize: '20px', transition: 'transform 0.3s ease, color 0.3s ease' }}>
-                  <i className="fab fa-facebook-f" style={{ color: 'white', transition: 'color 0.3s ease' }} onMouseOver={(e) => { e.currentTarget.style.color = '#3b5998'; e.currentTarget.style.transform = 'scale(2)'; }} onMouseOut={(e) => { e.currentTarget.style.color = 'white'; e.currentTarget.style.transform = 'scale(1)'; }}></i>
-                </a>
-                <a href="https://www.linkedin.com/company/vectorart/posts/?feedView=all" target="_blank" rel="noopener noreferrer" style={{ color: 'white', margin: '0 10px', textDecoration: 'none', fontSize: '20px', transition: 'transform 0.3s ease, color 0.3s ease' }}>
-                  <i className="fab fa-linkedin-in" style={{ color: 'white', transition: 'color 0.3s ease' }} onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(2)'; }} onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}></i>
-                </a>
-                <a href="https://www.youtube.com/@VectorartUSA" target="_blank" rel="noopener noreferrer" style={{ color: 'white', margin: '0 10px', textDecoration: 'none', fontSize: '20px', transition: 'transform 0.3s ease, color 0.3s ease' }}>
-                  <i className="fab fa-youtube" style={{ color: 'white', transition: 'color 0.3s ease' }} onMouseOver={(e) => { e.currentTarget.style.color = '#ff0000'; e.currentTarget.style.transform = 'scale(2)'; }} onMouseOut={(e) => { e.currentTarget.style.color = 'white'; e.currentTarget.style.transform = 'scale(1)'; }}></i>
-                </a>
+                <motion.a 
+                  href="https://www.instagram.com/vectorartusa/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ color: 'white', margin: '0 10px', textDecoration: 'none', fontSize: '20px', display: 'inline-block' }}
+                  whileHover={{ scale: 2, color: '#e1306c' }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <i className="fab fa-instagram"></i>
+                </motion.a>
+                <motion.a 
+                  href="https://www.facebook.com/vectorart.co/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ color: 'white', margin: '0 10px', textDecoration: 'none', fontSize: '20px', display: 'inline-block' }}
+                  whileHover={{ scale: 2, color: '#3b5998' }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <i className="fab fa-facebook-f"></i>
+                </motion.a>
+                <motion.a 
+                  href="https://www.linkedin.com/company/vectorart/posts/?feedView=all" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ color: 'white', margin: '0 10px', textDecoration: 'none', fontSize: '20px', display: 'inline-block' }}
+                  whileHover={{ scale: 2 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <i className="fab fa-linkedin-in"></i>
+                </motion.a>
+                <motion.a 
+                  href="https://www.youtube.com/@VectorartUSA" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ color: 'white', margin: '0 10px', textDecoration: 'none', fontSize: '20px', display: 'inline-block' }}
+                  whileHover={{ scale: 2, color: '#ff0000' }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <i className="fab fa-youtube"></i>
+                </motion.a>
               </div>
             </div>
           </div>

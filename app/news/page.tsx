@@ -90,6 +90,106 @@ export default function NewsPage() {
   return (
     <>
       <style jsx>{`
+              /* WIDGET: BUTTON */
+        .custom-btn {
+          font-weight: 700;
+          line-height: 1.1;
+          position: relative;
+          z-index: 1;
+          display: inline-flex;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 300ms;
+          white-space: nowrap;
+          text-decoration: none;
+          border: none;
+          outline: 0;
+          box-shadow: none;
+          justify-content: center;
+          align-items: center;
+          padding: 14px 30px;
+          font-size: 14px;
+        }
+
+        .custom-btn:disabled,
+        .custom-btn.disabled {
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+
+        .custom-btn:focus {
+          outline: none;
+        }
+
+        .custom-btn span {
+          position: absolute;
+          z-index: -1;
+          display: block;
+          width: 0;
+          height: 0;
+          transition: width 600ms, height 600ms;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+        }
+
+        .custom-btn:hover {
+          text-decoration: none;
+        }
+
+        .custom-btn:hover span {
+          width: 40rem;
+          height: 40rem;
+        }
+
+        .custom-btn--primary {
+          color: #fff;
+          background-color: #e82e31;
+        }
+
+        .custom-btn--primary span {
+          background-color: #101010;
+        }
+
+        .custom-btn--primary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--secondary {
+          color: #fff;
+          background-color: #101010;
+        }
+
+        .custom-btn--secondary span {
+          background-color: #e82e31;
+        }
+
+        .custom-btn--secondary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--tertiary {
+          color: #fff;
+          background-color: #e82e31;
+        }
+
+        .custom-btn--tertiary span {
+          background-color: #101010;
+        }
+
+        .custom-btn--tertiary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--sm {
+          padding: 10px 20px;
+          font-size: 13px;
+        }
+
+        .custom-btn--lg {
+          padding: 18px 40px;
+          font-size: 16px;
+        }
+
         .news-title-custom {
           cursor: pointer;
           display: inline-block;
@@ -107,6 +207,7 @@ export default function NewsPage() {
           transform: scale(0.92);
           opacity: 0.85;
         }
+
       `}</style>
 
       <div className="vlt-site-overlay"></div>
@@ -227,21 +328,41 @@ export default function NewsPage() {
                           <div className="vlt-gap-30"></div>
 
                           {news.external ? (
-                            <a 
-                              className="vlt-btn vlt-btn--secondary vlt-btn--md"
-                              href={news.external}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Read More
-                            </a>
+                              <a 
+                          className="custom-btn custom-btn--secondary custom-btn--lg" 
+                          href={news.external}
+                          // target="_blank" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
+                        >
+                          Read More
+                          <span></span>
+                        </a>
                           ) : (
-                            <Link
-                              className="vlt-btn vlt-btn--secondary vlt-btn--md"
-                              href={`/news/${news.id}`}
-                            >
-                              Read More
-                            </Link>
+                              <a 
+                          className="custom-btn custom-btn--secondary custom-btn--lg" 
+                          href={`/news/${news.id}`} 
+                          // target="_blank" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
+                        >
+                          Read More
+                          <span></span>
+                        </a>
                           )}
                         </div>
                       </div>

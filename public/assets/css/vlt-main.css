@@ -7813,7 +7813,7 @@ dl dd
 
 /* WIDGET: CONTENT SLIDER
 -------------------------------------------- */
-.vlt-content-slider
+/* .vlt-content-slider
 {
     width: 100%;
 }
@@ -7827,7 +7827,7 @@ dl dd
 .vlt-content-slider[data-slides-centered='enable'] .swiper-container
 {
     overflow: unset;
-}
+} */
 
 /* WIDGET: COUNTDOWN
 -------------------------------------------- */

@@ -3,6 +3,29 @@
 import React, { useState, useRef } from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
+
+/* AOS-equivalent wrapper */
+const AOSMotion = ({
+  children,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  delay?: number;
+}) => (
+  <motion.div
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{
+      duration: 0.8,
+      ease: 'easeOut',
+      delay,
+    }}
+  >
+    {children}
+  </motion.div>
+);
 
 export default function ArtOrderManagement() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -77,93 +100,97 @@ export default function ArtOrderManagement() {
       </Head>
 
       <main className="vlt-main">
-        {/* Hero */}
-     
-          {/* HERO */}
-          <section
+        {/* HERO */}
+<section
             className="has-white-color"
             style={{
-              backgroundImage: "url(assets/img/pages/aboutus/aboutusbg.jpg)",
-              backgroundRepeat: "no-repeat",
-              backgroundSize: "cover",
+              backgroundImage: "url('/assets/img/pages/aboutus/aboutusbg.jpg')",
+              backgroundRepeat: 'no-repeat',
+              backgroundSize: 'cover'
             }}
           >
             <div className="vlt-page-title vlt-page-title--style-4">
               <div className="container">
                 <div className="row">
                   <div className="col-md-6">
-                    <h1
-                      className="vlt-page-title__title"
-                      style={{
-                        color: "white",
-                        fontSize: "4rem",
-                        fontWeight: "700",
-                      }}
-                    >
-                     Art and Order Management
+                    <h1 className="vlt-page-title__title" style={{ color: 'white' , fontSize: "4rem" , fontWeight:"700"}}>
+                     Art & Order Management
                     </h1>
                   </div>
-                  <div className="col-md-6"></div>
                 </div>
               </div>
             </div>
             <div className="vlt-gap-150"></div>
           </section>
 
-          
-        {/* Intro */}
-        <section className="container intro">
-          <h2>In Brief</h2>
-          <p>
-          In everything we do, the starting point is always the same – your success. Our service mission is to understand and rapidly amplify the strengths that make you a success, and equally, identify and manage your top challenges and opportunities.
-          </p>
-          <p>
-            Our transition team studies in detail your processes, the systems that support them and connects with the people that drive them. They then design and implement a delivery service that fits your needs exactly. We replicate the best parts, and work with you to improve things wherever we see an opportunity.
-          </p>
-          <p>
-            The outcome is fast, high quality, value-added delivery of processed art and orders, day in day out. So you save on costs, management time and uncertainty. And you liberate the time to truly engage with customers.
-          </p>
-        </section>
+          {/* <div className="vlt-gap-80"></div> */}
 
-        {/* Accordion + Image */}
+        {/* INTRO */}
+        <AOSMotion>
+          <section className="container intro">
+            <h2>In Brief</h2>
+            <p>
+              In everything we do, the starting point is always the same – your success.
+              Our service mission is to understand and rapidly amplify the strengths
+              that make you a success, and equally, identify and manage your top
+              challenges and opportunities.
+            </p>
+            <p>
+              Our transition team studies in detail your processes, the systems that
+              support them and connects with the people that drive them. They then
+              design and implement a delivery service that fits your needs exactly.
+            </p>
+            <p>
+              The outcome is fast, high quality, value-added delivery of processed art
+              and orders, day in day out.
+            </p>
+          </section>
+        </AOSMotion>
+
+        {/* ACCORDION + IMAGE */}
         <section className="container content">
           <div className="grid">
             <div>
               {accordionData.map((item, i) => (
-                <div key={i} className="accordion-item">
-                  <button
-                    className={`accordion-btn ${
-                      activeIndex === i ? 'active' : ''
-                    }`}
-                    onClick={() => toggleAccordion(i)}
-                    aria-expanded={activeIndex === i}
-                  >
-                    {item.title}
-                    <span className="icon">
-                      {activeIndex === i ? '–' : '+'}
-                    </span>
-                  </button>
+                <AOSMotion key={i} delay={i * 0.1}>
+                  <div className="accordion-item">
+                    <button
+                      className={`accordion-btn ${activeIndex === i ? 'active' : ''}`}
+                      onClick={() => toggleAccordion(i)}
+                      aria-expanded={activeIndex === i}
+                    >
+                      {item.title}
+                      <span className="icon">
+                        {activeIndex === i ? '–' : '+'}
+                      </span>
+                    </button>
 
-                 <div
-  ref={el => {
-    panelRefs.current[i] = el; // assignment still happens
-  }}
-  className="accordion-panel"
-  style={{
-    maxHeight:
-      activeIndex === i
-        ? `${panelRefs.current[i]?.scrollHeight}px`
-        : '0px',
-  }}
->
-  <div className="panel-content">{item.content}</div>
-</div>
-
-                </div>
+                    <div
+                      ref={el => {
+                        panelRefs.current[i] = el;
+                      }}
+                      className="accordion-panel"
+                      style={{
+                        maxHeight:
+                          activeIndex === i
+                            ? `${panelRefs.current[i]?.scrollHeight}px`
+                            : '0px',
+                      }}
+                    >
+                      <div className="panel-content">{item.content}</div>
+                    </div>
+                  </div>
+                </AOSMotion>
               ))}
             </div>
 
-            <div>
+            {/* IMAGE (fade-left equivalent) */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, ease: 'easeOut' }}
+            >
               <Image
                 src="/assets/img/pages/artandordermanagement/artandordermanagement.jpg"
                 alt="Art and Order Management"
@@ -171,35 +198,37 @@ export default function ArtOrderManagement() {
                 height={420}
                 className="image"
               />
-            </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* Advantage */}
-        <section className="container advantage">
-          <h3>The Vector Triple Advantage</h3>
-          <div className="grid">
-            <div className="buttons">
-              <span style = {{backgroundColor:"#e82e31"}}>Guaranteed Savings</span>
-              <span style = {{backgroundColor:"#e82e31"}}>Guaranteed Delivery</span>
-              <span style = {{backgroundColor:"#e82e31"}}>Guaranteed Value</span>
+        {/* ADVANTAGE */}
+        <AOSMotion>
+          <section className="container advantage">
+            <h3>The Vector Triple Advantage</h3>
+            <div className="grid">
+              <div className="buttons">
+                <span style={{ backgroundColor: "#e82e31" }}>Guaranteed Savings</span>
+                <span style={{ backgroundColor: "#e82e31" }}>Guaranteed Delivery</span>
+                <span style={{ backgroundColor: "#e82e31" }}>Guaranteed Value</span>
+              </div>
+              <div>
+                <p>
+                  We redesign your cost economics to deliver up to 50% savings year
+                  after year—guaranteed.
+                </p>
+                <p>
+                  Our guaranteed delivery program ensures predictable turnaround,
+                  including same-day rush processing.
+                </p>
+                <p>
+                  We turn your operational data into insights that drive growth and
+                  smarter decisions.
+                </p>
+              </div>
             </div>
-            <div>
-              <p>
-                We redesign your cost economics to deliver up to 50% savings
-                year after year—guaranteed.
-              </p>
-              <p>
-                Our guaranteed delivery program ensures predictable turnaround,
-                including same-day rush processing.
-              </p>
-              <p>
-                We turn your operational data into insights that drive growth and
-                smarter decisions.
-              </p>
-            </div>
-          </div>
-        </section>
+          </section>
+        </AOSMotion>
       </main>
 
       <style jsx>{`
@@ -275,7 +304,6 @@ export default function ArtOrderManagement() {
 
         .buttons span {
           display: block;
-          background: #000;
           color: #fff;
           padding: 18px;
           margin-bottom: 12px;

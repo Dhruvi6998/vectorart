@@ -1,9 +1,7 @@
 "use client";
 
-import React, { ReactNode, useRef } from "react";
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-// import { useRef } from "react";
+import React, { ReactNode, useRef, useState } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 
 // Custom hook to replicate AOS behavior
 interface AnimatedSectionProps {
@@ -29,6 +27,173 @@ function AnimatedSection({ children, delay = 0 }: AnimatedSectionProps) {
 }
 
 export default function DesignAndDataServices() {
+  const [activeFilter, setActiveFilter] = useState("filter-product-information-management");
+
+  const filterItems = [
+    { id: "filter-product-information-management", label: "Product Information Management" },
+    { id: "filter-product-research", label: "Product Research" },
+    { id: "filter-catalog-design-production", label: "Catalog Design & Production" },
+    { id: "filter-image-editing-related-services", label: "Image Editing & Related Services" },
+    { id: "filter-brochure-flyer-design-services", label: "Brochure & Flyer Design Services" },
+  ];
+
+  const contentItems = [
+    {
+      id: "filter-product-information-management",
+      content: (
+        <article className="vlt-post vlt-post--style-2">
+          <div className="vlt-post__content">
+            <div className="row">
+              <p style={{ marginBottom: 30 }}>
+                Vector Art turnkey Product Information Management solutions are helping suppliers to focus on using data rather than managing it. Vector Art collates, organizes, refines and updates your product data quickly and accurately. Your catalogs, websites and partner sites always carry the right information and optimized images. We usually work in three steps:
+              </p>
+
+              <div className="col-lg-8">
+                <p><b>1. Collate data from multiple sources & formats</b></p>
+                <p>
+                  We help you hunt and gather product information, photographs, images, old catalog dBs, Mac/Indesign/Corel files, .xls files, text files, jpegs, pdfs and pricing tables. Wherever it resides, we find it and compile it ready for the next stage.
+                </p>
+
+                <p><b>2. Organize the information as a structured asset</b></p>
+                <p>
+                  A centralized database holds de-duplicated, up-to-date product information and retouched product images in the right sizes. You can now use it to drive your business. It can power all your customer-facing websites, catalogs and marketing material and it works with your order management and inventory systems at the back end.
+                </p>
+
+                <p><b>3. Enter data into databases & applications</b></p>
+                <p>
+                  Your product information has to reach and work with multiple internal and external systems and destinations: industry portals, partner sites, distributor portals and more. We make sure it is everywhere it should be, in real time, accurate and doing business for you.
+                </p>
+              </div>
+
+              <div className="col-lg-4">
+                <img
+                  src="/assets/img/pages/designanddataservices/img1.jpg"
+                  alt="product information management"
+                />
+              </div>
+            </div>
+          </div>
+        </article>
+      ),
+    },
+    {
+      id: "filter-product-research",
+      content: (
+        <article className="vlt-post vlt-post--style-2">
+          <div className="vlt-post__content">
+            <div className="row">
+              <div className="col-lg-8">
+                <p><b>Thorough, continuous research is at the core of successful online businesses.</b></p>
+                <p>
+                  And that's exactly what we offer you. Our research team provides you with invaluable information on competitor products and pricing, buying trends, distributor behavior, ongoing campaigns and more, allowing you to position your product optimally for each customer group and to win business.
+                  <br /> <br />
+                  Our research is powered by a team of expert researchers who can transform your online investments into measureable dollars.
+                </p>
+              </div>
+              <div className="col-lg-4">
+                <img
+                  src="/assets/img/pages/designanddataservices/img2.jpg"
+                  alt="product research"
+                />
+              </div>
+            </div>
+          </div>
+        </article>
+      ),
+    },
+    {
+      id: "filter-catalog-design-production",
+      content: (
+        <article className="vlt-post vlt-post--style-2">
+          <div className="vlt-post__content">
+            <div className="row">
+              <p style={{ marginBottom: 30 }}>
+                Vector Art turnkey Product Information Management solutions are helping suppliers to focus on using data rather than managing it. Vector Art collates, organizes, refines and updates your product data quickly and accurately. Your catalogs, websites and partner sites always carry the right information and optimized images. We usually work in three steps:
+              </p>
+
+              <div className="col-lg-8">
+                <p><b>Vector Art creates catalogs that synergize across web, digital, print and mobile platforms.</b></p>
+                <p>
+                  It's a single window solution that has your catalogs ready for business within days. Your customers get a compelling and consistent experience. You realize greater returns from your catalog programs and save on time and money. The crux of our cross-media publishing solution is "Create Once, Publish and Monetize Multiple Times".
+                </p>
+                <p><b>The promotional industry is becoming truly multi-channel.</b></p>
+                <p>A seamless experience across multiple mediums is vital to building distributor engagement. And that is the deliverable that we promise and keep in mind through our design, data and publishing phases for your catalogs.</p>
+                <p><b>All you have to do is to provide us with the inputs you can.</b></p>
+                <p>We will help fill in the missing pieces through photography and data services. And if you want us to write copy for your products, our team of specialized copy writers will do just that.</p>
+              </div>
+
+              <div className="col-lg-4">
+                <img
+                  src="/assets/img/pages/designanddataservices/img3.jpg"
+                  alt="catalog design and production"
+                />
+              </div>
+            </div>
+          </div>
+        </article>
+      ),
+    },
+    {
+      id: "filter-image-editing-related-services",
+      content: (
+        <article className="vlt-post vlt-post--style-2">
+          <div className="vlt-post__content">
+            <div className="row">
+              <div className="col-lg-8">
+                <p><b>Product Image Editing</b></p>
+                <p>We do it all. Remove backgrounds from product photographs, optimize images for the web, enhance/clean up product shots and more. On time, in budget.</p>
+                <p><b>Clipping Path</b></p>
+                <p>Vector Art delivers fully hand drawn clipping paths and masks, even for complex shapes, so you get the highest quality product images ready for print</p>
+                <p><b>Product Templates/mockups</b></p>
+                <p>Let Vector Art handle all your one time or irregular studio work including getting product images ready for print and web, virtual samples and template creation.</p>
+                <p><b>Dedicated Studio</b></p>
+                <p>Realize the full cost and service benefits of offshoring your production art, within days. We create and manage dedicated teams that work exclusively for you.</p>
+                <p><b>On Demand Artwork</b></p>
+                <p>Back up your busy art studio. Let Vector Art's 24/7 studio manage your overspills and emergencies. Our experienced team can meet all your needs across all formats.</p>
+              </div>
+
+              <div className="col-lg-4">
+                <img
+                  src="/assets/img/pages/designanddataservices/img4.jpg"
+                  alt="image editing services"
+                />
+              </div>
+            </div>
+          </div>
+        </article>
+      ),
+    },
+    {
+      id: "filter-brochure-flyer-design-services",
+      content: (
+        <article className="vlt-post vlt-post--style-2">
+          <div className="vlt-post__content">
+            <div className="row">
+              <div className="col-lg-8">
+                <p><b>PDF Brochures</b></p>
+                <p>Vector Art custom designs PDF brochures with seasonal or event-specific themes, ready to be downloaded from your websites. They are effective and low-cost.</p>
+                <p><b>Flip Brochures</b></p>
+                <p>Flip ahead. Vector Art's advanced flip technology gives your customers powerful search, bookmarking, commenting and email tools within a fast digital catalog format.</p>
+                <p><b>Print Brochures</b></p>
+                <p>Vector Art designs corporate brochures with custom branded cover and products. Print them digitally and pitch existing and new corporate customers at low cost.</p>
+                <p><b>Email Flyers</b></p>
+                <p>Vector Art's innovatively designed flyers are optimized for email blasts and help you win business. Try us on demand or subscribe to our monthly service.</p>
+                <p><b>PDF Flyers</b></p>
+                <p>Vector Art can create a range of custom designed PDF flyers for users to download from your website or for mailing/printing, made for Close Outs, Offers, New Products and more.</p>
+              </div>
+              <div className="col-lg-4">
+                <img
+                  src="/assets/img/pages/designanddataservices/img5.jpg"
+                  alt="brochure and flyer design"
+                />
+              </div>
+            </div>
+          </div>
+        </article>
+      ),
+    },
+  ];
+
   return (
     <>
       <div className="vlt-site-overlay"></div>
@@ -112,186 +277,37 @@ export default function DesignAndDataServices() {
                 <div className="container">
                   <AnimatedSection delay={100}>
                     <div className="text-center">
-                      <ul className="vlt-isotope-filters" id="vlt-filter-blog-07">
-                        <li className="active" data-filter=".filter-product-information-management">
-                          <span>Product Information Management</span>
-                        </li>
-                        <li data-filter=".filter-product-research"><span>Product Research</span></li>
-                        <li data-filter=".filter-catalog-design-production">
-                          <span>Catalog Design & Production</span>
-                        </li>
-                        <li data-filter=".filter-image-editing-related-services">
-                          <span>Image Editing & Related Services</span>
-                        </li>
-                        <li data-filter=".filter-brochure-flyer-design-services">
-                          <span>Brochure & Flyer Design Services</span>
-                        </li>
+                      <ul className="vlt-isotope-filters">
+                        {filterItems.map((item) => (
+                          <li
+                            key={item.id}
+                            className={activeFilter === item.id ? "active" : ""}
+                            onClick={() => setActiveFilter(item.id)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            <span>{item.label}</span>
+                          </li>
+                        ))}
                       </ul>
                     </div>
                   </AnimatedSection>
 
-                  <div
-                    className="vlt-isotope-grid"
-                    data-columns="1"
-                    data-layout="masonry"
-                    data-x-gap="0|0"
-                    data-y-gap="0|0"
-                    data-controls="#vlt-filter-blog-07"
-                    data-load-more-selector="#vlt-load-more-blog-07"
-                  >
-                    <div className="grid-sizer"></div>
-
-                    {/* Item 1 */}
-                    <div className="grid-item filter-product-information-management">
-                      <article className="vlt-post vlt-post--style-2">
-                        <div className="vlt-post__content">
-                          <div className="row">
-                            <p style={{ marginBottom: 30 }}>
-                           Vector Art turnkey Product Information Management solutions are helping suppliers to focus on using data rather than managing it. Vector Art collates, organizes, refines and updates your product data quickly and accurately. Your catalogs, websites and partner sites always carry the right information and optimized images. We usually work in three steps:
-                            </p>
-
-                            <div className="col-lg-8">
-                              <p><b>1. Collate data from multiple sources & formats</b></p>
-                              <p>
-                              We help you hunt and gather product information, photographs, images, old catalog dBs, Mac/Indesign/Corel files, .xls files, text files, jpegs, pdfs and pricing tables. Wherever it resides, we find it and compile it ready for the next stage.
-                              </p>
-
-                              <p><b>2. Organize the information as a structured asset</b></p>
-                              <p>
-            A centralized database holds de-duplicated, up-to-date product information and retouched product images in the right sizes.You can now use it to drive your business. It can power all your customer-facing websites, catalogs and marketing material and it works with your order management and inventory systems at the back end.
-                              </p>
-
-                              <p><b>3. Enter data into databases & applications</b></p>
-                              <p>
-                               Your product information has to reach and work with multiple internal and external systems and destinations: industry portals, partner sites, distributor portals and more. We make sure it is everywhere it should be, in real time, accurate and doing business for you.
-                              </p>
-                            </div>
-
-                            <div className="col-lg-4">
-                              <img
-                                src="/assets/img/pages/designanddataservices/img1.jpg"
-                                alt="product information management"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    </div>
-
-                    {/* Item 2 */}
-                    <div className="grid-item filter-product-research">
-                      <article className="vlt-post vlt-post--style-2">
-                        <div className="vlt-post__content">
-                          <div className="row">
-                            <div className="col-lg-8">
-                              <p><b>Thorough, continuous research is at the core of successful online businesses.</b></p>
-                              <p>
-                              And that's exactly what we offer you. Our research team provides you with invaluable information on competitor products and pricing, buying trends, distributor behavior, ongoing campaigns and more, allowing you to position your product optimally for each customer group and to win business.
-<br /> <br /> 
-Our research is powered by a team of expert researchers who can transform your online investments into measureable dollars.
-                              </p>
-                            </div>
-                            <div className="col-lg-4">
-                              <img
-                                src="/assets/img/pages/designanddataservices/img2.jpg"
-                                alt="product research"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    </div>
-
-                    {/* Item 3 */}
-                    <div className="grid-item filter-catalog-design-production">
-                      <article className="vlt-post vlt-post--style-2">
-                        <div className="vlt-post__content">
-                          <div className="row">
-                            <p style={{ marginBottom: 30 }}>
-                             Vector Art turnkey Product Information Management solutions are helping suppliers to focus on using data rather than managing it. Vector Art collates, organizes, refines and updates your product data quickly and accurately. Your catalogs, websites and partner sites always carry the right information and optimized images. We usually work in three steps:
-                            </p>
-
-                            <div className="col-lg-8">
-                              <p><b>Vector Art creates catalogs that synergize across web, digital, print and mobile platforms.</b></p>
-                              <p>
-                               It's a single window solution that has your catalogs ready for business within days. Your customers get a compelling and consistent experience. You realize greater returns from your catalog programs and save on time and money. The crux of our cross-media publishing solution is "Create Once, Publish and Monetize Multiple Times".
-                              </p>
-                              <p><b>The promotional industry is becoming truly multi-channel.</b></p>
-                              <p>A seamless experience across multiple mediums is vital to building distributor engagement. And that is the deliverable that we promise and keep in mind through our design, data and publishing phases for your catalogs.</p>
-                            <p><b>All you have to do is to provide us with the inputs you can.</b></p>
-                            <p>We will help fill in the missing pieces through photography and data services. And if you want us to write copy for your products, our team of specialized copy writers will do just that.</p>
-                            </div>
-
-                            <div className="col-lg-4">
-                              <img
-                                src="/assets/img/pages/designanddataservices/img3.jpg"
-                                alt="catalog design and production"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    </div>
-
-                    {/* Item 4 */}
-                    <div className="grid-item filter-image-editing-related-services">
-                      <article className="vlt-post vlt-post--style-2">
-                        <div className="vlt-post__content">
-                          <div className="row">
-                            <div className="col-lg-8">
-                              <p><b>Product Image Editing</b></p>
-                              <p>We do it all. Remove backgrounds from product photographs, optimize images for the web, enhance/clean up product shots and more. On time, in budget.
-
-</p>
-                              <p><b>Clipping Path</b></p>
-                              <p>Vector Art delivers fully hand drawn clipping paths and masks, even for complex shapes, so you get the highest quality product images ready for print</p>
-                            <p><b>Product Templates/mockups</b></p>
-                            <p>Let Vector Art handle all your one time or irregular studio work including getting product images ready for print and web, virtual samples and template creation.</p>
-                            <p><b>Dedicated Studio</b></p>
-                            <p>Realize the full cost and service benefits of offshoring your production art, within days. We create and manage dedicated teams that work exclusively for you.</p>
-                            <p><b>On Demand Artwork</b></p>
-                            <p>Back up your busy art studio. Let Vector Art's 24/7 studio manage your overspills and emergencies. Our experienced team can meet all your needs across all formats.</p>
-                            </div>
-
-                            <div className="col-lg-4">
-                              <img
-                                src="/assets/img/pages/designanddataservices/img4.jpg"
-                                alt="image editing services"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    </div>
-
-                    {/* Item 5 */}
-                    <div className="grid-item filter-brochure-flyer-design-services">
-                      <article className="vlt-post vlt-post--style-2">
-                        <div className="vlt-post__content">
-                          <div className="row">
-                            <div className="col-lg-8">
-                              <p><b>PDF Brochures</b></p>
-                              <p>Vector Art custom designs PDF brochures with seasonal or event-specific themes, ready to be downloaded from your websites. They are effective and low-cost.</p>
-                              <p><b>Flip Brochures</b></p>
-                              <p>Flip ahead. Vector Art's advanced flip technology gives your customers powerful search, bookmarking, commenting and email tools within a fast digital catalog format.</p>
-                            <p><b>Print Brochures</b></p>
-                            <p>Vector Art designs corporate brochures with custom branded cover and products. Print them digitally and pitch existing and new corporate customers at low cost.</p>
-                            
-                            <p><b>Email Flyers</b></p>
-                            <p>Vector Art's innovatively designed flyers are optimized for email blasts and help you win business. Try us on demand or subscribe to our monthly service.</p>
-<p><b>PDF Flyers</b></p>
-<p>Vector Art can create a range of custom designed PDF flyers for users to download from your website or for mailing/printing, made for Close Outs, Offers, New Products and more.</p>
-                           </div>
-                            <div className="col-lg-4">
-                              <img
-                                src="/assets/img/pages/designanddataservices/img5.jpg"
-                                alt="brochure and flyer design"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    </div>
+                  <div className="vlt-isotope-grid" style={{ position: "relative" }}>
+                    <AnimatePresence mode="wait">
+                      {contentItems.map((item) =>
+                        activeFilter === item.id ? (
+                          <motion.div
+                            key={item.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            {item.content}
+                          </motion.div>
+                        ) : null
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               </section>

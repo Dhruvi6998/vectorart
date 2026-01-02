@@ -7,9 +7,9 @@ import VLTInit from "./components/VLTInit";
 import AOSInit from './components/AOSInit';
 import Snowflakes from "./components/SnowFlakes";
 import { Suspense } from 'react';
-import ClientOnlySpinner from "./components/ClientOnlySpinner";
+// import ClientOnlySpinner from "./components/ClientOnlySpinner";
 import ScrollProgressCircle from './components/ScrollProgressCircle';
-
+import BottomLeftLoader from "./components/BottomLeftLoader";
 export const metadata = {
   title: "Vectorart.co - Graphics & Digital Imaging Service Company",
   description: "Professional graphics & digital imaging services",
@@ -68,15 +68,14 @@ export default function RootLayout({
 
       <body>
  {/* Safe for server components */}
-        <Suspense fallback={null}>
-          <ClientOnlySpinner />
-        </Suspense>
+       
         {/* Layout */}
-      
+      <BottomLeftLoader />
         <AOSInit />
         <Navbar />
           <Snowflakes />
         {children}
+        
         <AOSRefresher />
         <Footer />
           <ScrollProgressCircle />

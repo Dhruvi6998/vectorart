@@ -6492,7 +6492,7 @@ dl dd {
     height: 100%
 }
 
-.vlt-content-slider {
+/* .vlt-content-slider {
     width: 100%
 }
 
@@ -6504,7 +6504,7 @@ dl dd {
 
 .vlt-content-slider[data-slides-centered=enable] .swiper-container {
     overflow: unset
-}
+} */
 
 .vlt-countdown {
     font-size: 36px;

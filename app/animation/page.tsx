@@ -1,28 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import { motion } from "framer-motion";
 
 export default function AnimationPage() {
   useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: true,
-    });
-
-    // Accordion logic
     const accordions = document.querySelectorAll(".accordion");
 
     accordions.forEach((acc) => {
       acc.addEventListener("click", function (this: HTMLElement) {
         this.classList.toggle("accactive");
+
         const panel = this.nextElementSibling as HTMLElement;
 
-        if (panel.style.maxHeight) {
-          panel.style.maxHeight = "";
+        if (panel.classList.contains("open")) {
+          panel.classList.remove("open");
         } else {
-          panel.style.maxHeight = panel.scrollHeight + "px";
+          panel.classList.add("open");
         }
       });
     });
@@ -49,10 +43,16 @@ export default function AnimationPage() {
           <div className="container">
             <div className="row">
               <div className="col-md-7">
-                <h1 className="vlt-page-title__title" style={{ color: "white", fontSize: "4rem", fontWeight: "700"}}>
+                <h1
+                  className="vlt-page-title__title"
+                  style={{
+                    color: "white",
+                    fontSize: "4rem",
+                    fontWeight: "700",
+                  }}
+                >
                   Animation
                 </h1>
-                <h2 hidden></h2>
               </div>
             </div>
           </div>
@@ -64,28 +64,28 @@ export default function AnimationPage() {
       <section>
         <div className="vlt-gap-80"></div>
         <div className="container">
-          <div
+          <motion.div
             className="row"
             style={{ margin: 20 }}
-            data-aos="fade"
-            data-aos-delay="100"
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
           >
             {/* Company AV */}
             <button className="accordion">
               <b>Company AV</b>
             </button>
             <div className="panel">
-              <p style={{ margin: 20 }}>
+              <div style={{ margin: 20 }}>
                 <iframe
                   width="100%"
                   height="315"
                   src="https://www.youtube.com/embed/V6oNLyngf3o"
-                  title="YouTube video player"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  title="Company AV"
                   allowFullScreen
-                ></iframe>
-              </p>
+                />
+              </div>
             </div>
 
             {/* Logo Reveal */}
@@ -93,69 +93,27 @@ export default function AnimationPage() {
               <b>Logo Reveal</b>
             </button>
             <div className="panel">
-              <p style={{ margin: 20 }}>
+              <div style={{ margin: 20 }}>
                 <div className="row">
-                  <div className="col-lg-6">
-                    <iframe
-                      width="100%"
-                      height="315"
-                      src="https://www.youtube.com/embed/dYKM0astrQo"
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-
-                  <div className="col-lg-6">
-                    <iframe
-                      width="100%"
-                      height="315"
-                      src="https://www.youtube.com/embed/DSAwNx3wDAk"
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-
-                  <div className="col-lg-6">
-                    <iframe
-                      width="100%"
-                      height="315"
-                      src="https://www.youtube.com/embed/VWMnCzpCbeE"
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-
-                  <div className="col-lg-6">
-                    <iframe
-                      width="100%"
-                      height="315"
-                      src="https://www.youtube.com/embed/mXuHvL4L0a4"
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-
-                  <div className="col-lg-6">
-                    <iframe
-                      width="100%"
-                      height="315"
-                      src="https://www.youtube.com/embed/BIZj72wGKAY"
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
+                  {[
+                    "dYKM0astrQo",
+                    "DSAwNx3wDAk",
+                    "VWMnCzpCbeE",
+                    "mXuHvL4L0a4",
+                    "BIZj72wGKAY",
+                  ].map((id) => (
+                    <div className="col-lg-6" key={id}>
+                      <iframe
+                        width="100%"
+                        height="315"
+                        src={`https://www.youtube.com/embed/${id}`}
+                        title={id}
+                        allowFullScreen
+                      />
+                    </div>
+                  ))}
                 </div>
-              </p>
+              </div>
             </div>
 
             {/* Raster To Vector */}
@@ -163,9 +121,11 @@ export default function AnimationPage() {
               <b>Raster To Vector</b>
             </button>
             <div className="panel">
-              <p style={{ margin: 20 }}></p>
+              <div style={{ margin: 20 }}>
+                {/* Add content here if needed */}
+              </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -181,8 +141,7 @@ export default function AnimationPage() {
           text-align: left;
           outline: none;
           font-size: 15px;
-          transition: 0.4s;
-          position: relative;
+          transition: background-color 0.4s;
         }
 
         .accordion:hover,
@@ -195,7 +154,6 @@ export default function AnimationPage() {
           color: #fff;
           font-weight: bold;
           float: right;
-          margin-left: 5px;
         }
 
         .accactive:after {
@@ -205,11 +163,14 @@ export default function AnimationPage() {
         .panel {
           width: 100%;
           color: white;
-          padding: 0 18px;
           background-color: rgba(78, 78, 78, 1);
           overflow: hidden;
-          transition: max-height 0.5s ease-out;
           max-height: 0;
+          transition: max-height 0.6s ease;
+        }
+
+        .panel.open {
+          max-height: 3000px;
         }
       `}</style>
     </>

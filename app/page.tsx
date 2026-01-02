@@ -178,6 +178,153 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+        
+       <style jsx>{`
+        /* WIDGET: BUTTON */
+        .custom-btn {
+          font-weight: 700;
+          line-height: 1.1;
+          position: relative;
+          z-index: 1;
+          display: inline-flex;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 300ms;
+          white-space: nowrap;
+          text-decoration: none;
+          border: none;
+          outline: 0;
+          box-shadow: none;
+          justify-content: center;
+          align-items: center;
+          padding: 14px 30px;
+          font-size: 14px;
+        }
+
+        .custom-btn:disabled,
+        .custom-btn.disabled {
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+
+        .custom-btn:focus {
+          outline: none;
+        }
+
+        .custom-btn span {
+          position: absolute;
+          z-index: -1;
+          display: block;
+          width: 0;
+          height: 0;
+          transition: width 600ms, height 600ms;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+        }
+
+        .custom-btn:hover {
+          text-decoration: none;
+        }
+
+        .custom-btn:hover span {
+          width: 40rem;
+          height: 40rem;
+        }
+
+        .custom-btn--primary {
+          color: #fff;
+          background-color: #e82e31;
+        }
+
+        .custom-btn--primary span {
+          background-color: #101010;
+        }
+
+        .custom-btn--primary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--secondary {
+          color: #fff;
+          background-color: #101010;
+        }
+
+        .custom-btn--secondary span {
+          background-color: #e82e31;
+        }
+
+        .custom-btn--secondary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--tertiary {
+          color: #fff;
+          background-color: #e82e31;
+        }
+
+        .custom-btn--tertiary span {
+          background-color: #101010;
+        }
+
+        .custom-btn--tertiary:hover {
+          color: #fff;
+        }
+
+        .custom-btn--sm {
+          padding: 10px 20px;
+          font-size: 13px;
+        }
+
+        .custom-btn--lg {
+          padding:20px 70px;
+          font-size: 16px;
+        }
+            /* CONTENT SLIDER STYLES */
+        .vlt-content-slider {
+          width: 100%;
+        }
+
+        @media only screen and (min-width: 768px) {
+          .vlt-content-slider[data-slides-centered="enable"] .swiper-slide {
+            width: auto !important;
+          }
+        }
+
+        .vlt-content-slider[data-slides-centered="enable"] .swiper-container {
+          overflow: unset;
+        }
+               /* PORTFOLIO STYLES */
+        .vlt-work {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .vlt-work__media {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .vlt-work__link {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 2;
+        }
+
+        .vlt-work__media img {
+          width: 100%;
+          height: auto;
+          display: block;
+          transition: transform 0.3s ease;
+        }
+
+        .vlt-work:hover .vlt-work__media img {
+          transform: scale(1.05);
+        }
+
+      `}</style>
       <div className="vlt-site-overlay"></div>
       <main className="vlt-main">
         <div className="vlt-page-content">
@@ -391,9 +538,23 @@ const HomePage: React.FC = () => {
                         transition={{ duration: 1, delay: 0.3 }}
                         className="vlt-animated-block"
                       >
-                        <Link className="vlt-btn vlt-btn--secondary vlt-btn--md" href="/aboutus">
-                          Who we are
-                        </Link>
+                                            <a 
+                          className="custom-btn custom-btn--secondary custom-btn--lg" 
+                          href="/aboutus" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          onMouseMove={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const span = e.currentTarget.querySelector('span');
+                            if (span) {
+                              span.style.left = `${e.clientX - rect.left}px`;
+                              span.style.top = `${e.clientY - rect.top}px`;
+                            }
+                          }}
+                        >
+                         Who we are
+                          <span></span>
+                        </a>
                       </motion.div>
                     </div>
                   </div>
@@ -844,7 +1005,7 @@ const HomePage: React.FC = () => {
                   className="vlt-animated-block"
                 >
                   <div className="vlt-stroke-text vlt-stroke-text--lg">
-                    <Link href="/contactus" target="_self">
+                    <Link href="/contact" target="_self">
                       Lets Work
                     </Link>
                   </div>
