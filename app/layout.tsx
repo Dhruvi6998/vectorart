@@ -70,7 +70,9 @@ export default function RootLayout({
  {/* Safe for server components */}
        
         {/* Layout */}
-      <BottomLeftLoader />
+        <Suspense fallback={null}>
+          <BottomLeftLoader />
+        </Suspense>
         <AOSInit />
         <Navbar />
           <Snowflakes />
