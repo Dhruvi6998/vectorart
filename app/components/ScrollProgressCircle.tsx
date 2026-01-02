@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-/* ✅ DEFINE STYLES FIRST */
 const containerStyle: React.CSSProperties = {
   position: 'fixed',
   right: '24px',
@@ -13,27 +12,38 @@ const containerStyle: React.CSSProperties = {
 
 export default function ScrollProgressCircle() {
   const [progress, setProgress] = useState(0);
+  const requestRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const onScroll = () => {
+    const updateProgress = () => {
       const scrollTop = window.scrollY;
-      const height =
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const clientHeight = document.documentElement.clientHeight;
 
-      setProgress((scrollTop / height) * 100);
+      const currentProgress = (scrollTop / (scrollHeight - clientHeight)) * 100;
+      setProgress(currentProgress);
+
+      requestRef.current = null; // allow next animation frame
     };
 
-    window.addEventListener('scroll', onScroll);
-    onScroll();
+    const handleScroll = () => {
+      if (requestRef.current === null) {
+        requestRef.current = requestAnimationFrame(updateProgress);
+      }
+    };
 
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener('scroll', handleScroll);
+    updateProgress(); // initial progress
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
   }, []);
 
   const radius = 28;
   const circumference = 2 * Math.PI * radius;
 
-  /* ✅ Scroll to top function */
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -60,11 +70,9 @@ export default function ScrollProgressCircle() {
           strokeWidth="4"
           fill="none"
           strokeDasharray={circumference}
-          strokeDashoffset={
-            circumference - (progress / 100) * circumference
-          }
+          strokeDashoffset={circumference - (progress / 100) * circumference}
           strokeLinecap="round"
-          style={{ transition: 'stroke-dashoffset 0.2s ease-out' }}
+          style={{ transition: 'none' }} // remove lag, follow scroll instantly
         />
 
         {/* Filled Center */}
